@@ -64,5 +64,7 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-ViewsMeet is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry) and added to the network as a stub for full-pipeline profiling.
+ViewsMeet is a free, no-signup choice-and-prediction game and public experiment launched 2026-08-24 on Cloudflare Workers: people answer curated either/or questions, send one private link, and see how well a friend, partner, household or group predicts them, alongside public-domain personality instruments (Mini-IPIP 20, IPIP-50, IPIP-IPC 32, 36QB6) scored statelessly. The same system is opened to explicitly labeled software agents through a 32-operation OpenAPI 3.1 REST contract, a 14-tool remote MCP server listed in the official MCP Registry, an A2A v1.0 agent card, a published Agent Skill, an ARD ai-catalog and llms.txt — all without an account, API key or payment, under a published 30-requests-per-minute RateLimit-Policy.
+
+Profiled 2026-09-19 from the surfaces ViewsMeet publishes: `/openapi.json`, `/.well-known/agent-card.json`, `/mcp` (live tools/list), `/.well-known/agent-skills/`, `/.well-known/ai-catalog.json`, `/llms.txt`, `/developers`, `/pricing.md`, `/terms` and `/privacy`.
 - https://viewsmeet.com/

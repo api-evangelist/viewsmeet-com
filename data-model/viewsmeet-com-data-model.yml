@@ -1,0 +1,76 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  Derived from the 24 component schemas, their $ref links and identifier fields in openapi/viewsmeet-com-openapi.yml,
+  plus the live responses from /api/v1/agents/daily, /api/v1/experiments/questions, /api/v1/connections/topology and
+  /api/v1/ledger on 2026-09-19. Entities marked implicit have no schema of their own — they are addressed only through
+  opaque path capabilities ({code}, {token}) and described in operation prose.
+docs: https://viewsmeet.com/developers
+notation: relationships use has_one / has_many / belongs_to with the referencing field; direction is from the entity that owns the reference.
+
+identifiers:
+- {field: editionId, format: 'YYYY-MM-DD (UTC date)', example: '2026-09-19'}
+- {field: packId, format: '^[a-z0-9]+(?:-[a-z0-9]+)*$ (max 64)', example: generated-daily-20260919}
+- {field: packVersion, format: 'integer 1-1000000', example: 20260919}
+- {field: digest / editionHash / ballotHash, format: 'sha256 hex (64 chars), digest prefixed "sha256:"'}
+- {field: challengeId / receiptId / questionSetId, format: '^[A-Za-z0-9_-]{8,128}$ opaque', example: challenge_12345678}
+- {field: nonce, format: '^[A-Za-z0-9_-]{16,128}$ one-use', example: nonce_1234567890abcdef}
+- {field: code, format: 'opaque private capability in /c/<code>, /personality/c/<code>, /group-experiment/c/<code>'}
+- {field: token, format: 'opaque management or deletion capability returned on creation; bearer secret'}
+- {field: participantKey, format: '16-128 char base64url, generated fresh per room/challenge by the participant'}
+- {field: instrumentId, format: '<slug>-en-v<version>', example: ipip-big-five-50-en-v1}
+
+entities:
+- {name: DailyEdition, schema: null, domain: ballots, description: 'One immutable UTC-dated pack of five reviewed either/or questions (editionId, pack.id, version, digest, title, cadence daily).'}
+- {name: AgentQuestion, schema: AgentQuestion, domain: ballots, description: 'id, prompt, optionA {id a, label}, optionB {id b, label}.'}
+- {name: AgentChallenge, schema: AgentChallenge, domain: ballots, description: 'A one-use, nonce-bearing challenge issued from an edition — mode, target, questionCount, requiresSelf/Prediction, issuedAt, expiresAt, status, packDigest.'}
+- {name: AgentBallot, schema: AgentBallot, domain: ballots, description: 'Enum-only self and prediction choice vectors submitted against one challenge and nonce.'}
+- {name: AgentBallotReceipt, schema: AgentBallotReceipt, domain: ballots, description: 'Durable receipt — receiptId, status, ballotHash, server-assigned provenance and cohortLabel, answer counts, receivedAt.'}
+- {name: StableKeyRegistration, schema: P256PublicJwk, domain: evidence, description: 'A P-256 public JWK (kty, crv, x, y) registered via a one-use signed challenge; yields a key-continuity identifier used in X-ViewsMeet-Agent-Id.'}
+- {name: MiniIpipInstrument, schema: null, domain: personality, description: 'The fixed 20-item Mini-IPIP instrument (mini-ipip-20-en-v1) with five response options.'}
+- {name: MiniIpipResponseEntry, schema: MiniIpipResponseEntry, domain: personality, description: '{itemId, response 1-5}; twenty entries form a MiniIpipResponseVector.'}
+- {name: PersonalityPerceptionChallenge, schema: null (implicit), domain: perception, description: 'Seven-day private challenge created from a creator''s Mini-IPIP vector; stores only five keyed factor sums plus an optional alias; addressed by {code} (participants) and {token} (creator).'}
+- {name: PersonalityPerception, schema: null (implicit), domain: perception, description: 'One participant''s 20 predictions, immediately reduced to five predicted sums; addressed by a deletion {token}.'}
+- {name: PersonalityPerceptionFactorPair, schema: PersonalityPerceptionFactorPair, domain: perception, description: 'factorId, name, creator self raw sum/mean, predicted raw sum/mean, signedGap, absoluteGap.'}
+- {name: GroupPicksQuestionBank, schema: null, domain: group-picks, description: 'Reviewed bank viewsmeet-reviewed-100 v1: 100 questions with number, id, category, prompt, optionA/B.'}
+- {name: GroupPicksExperiment, schema: null (implicit), domain: group-picks, description: 'A private room freezing 5-20 question ids; max 50 responses, 14-day expiry, aggregate threshold 3; addressed by {code} and a management {token}; may have child rooms via branches.'}
+- {name: GroupPicksResponse, schema: null (implicit), domain: group-picks, description: 'One participant''s ordered a/b answers keyed by a participant hash; addressed by a deletion {token}.'}
+- {name: ConnectionTopology, schema: ConnectionTopology, domain: atlas, description: 'A frozen 30-day public edition — status, editionId, editionHash, previousEditionHash, window, thresholds, cells, suppressedCellCount, disclosure, methodologyUrl.'}
+- {name: ConnectionTopologyCell, schema: ConnectionTopologyCell, domain: atlas, description: 'Categorical cell — from/to actor class + evidence, relationshipType, directEdgeCount, propagationEdgeCount, independentLineageCount.'}
+- {name: LedgerCheckpoint, schema: null, domain: transparency, description: '{schemaVersion, editionId, editionHash, previousEditionHash, createdAt} in the oldest-to-newest country-participation ledger.'}
+- {name: AssessmentCatalogEntry, schema: AssessmentCatalogEntry, domain: assessments, description: 'slug, id, version, title, itemCount, estimatedMinutes, summary — exactly three (ipip-big-five-50, ipip-ipc-32, qb6-big-six-36).'}
+- {name: AssessmentInstrument, schema: AssessmentInstrument, domain: assessments, description: 'Fixed wording and order — items (32-50 AssessmentItem), responseOptions (5-6), instruction, version.'}
+- {name: AssessmentItem, schema: AssessmentItem, domain: assessments, description: '{id, text}.'}
+- {name: AssessmentResponseOption, schema: AssessmentResponseOption, domain: assessments, description: '{value, label}.'}
+- {name: AssessmentScoreRequest, schema: AssessmentScoreRequest, domain: assessments, description: 'instrumentId, version, complete responses vector (every item exactly once).'}
+- {name: AssessmentScoreResult, schema: AssessmentScoreResult, domain: assessments, description: 'instrument (id, slug, version, scoringVersion), scales (5-8 AssessmentScaleScore), disclosure, methodologyUrl — never persisted.'}
+- {name: AssessmentScaleScore, schema: AssessmentScaleScore, domain: assessments, description: 'id, name, rawSum, rawMean, itemCount, minimum, maximum.'}
+- {name: AssessmentMethodology, schema: AssessmentMethodology, domain: assessments, description: 'publicDomain, sourceUrls, citation, scoring rules, sourceCoefficientAlpha, limitations, excludedInterpretations.'}
+- {name: ProtocolError, schema: ProtocolError, domain: platform, description: 'error, message, issues[] {path, code, message}.'}
+
+relationships:
+- {from: DailyEdition, to: AgentQuestion, kind: has_many, via: pack.questions}
+- {from: AgentChallenge, to: DailyEdition, kind: belongs_to, via: 'editionId + packId + packVersion + packDigest'}
+- {from: AgentChallenge, to: AgentQuestion, kind: has_many, via: questions}
+- {from: AgentBallot, to: AgentChallenge, kind: belongs_to, via: 'challengeId + nonce'}
+- {from: AgentBallot, to: DailyEdition, kind: belongs_to, via: 'packId + packVersion'}
+- {from: AgentBallotReceipt, to: AgentBallot, kind: has_one, via: ballotHash}
+- {from: AgentBallotReceipt, to: AgentChallenge, kind: belongs_to, via: challengeId}
+- {from: AgentChallenge, to: StableKeyRegistration, kind: belongs_to, via: 'X-ViewsMeet-Agent-Id header (optional)'}
+- {from: PersonalityPerceptionChallenge, to: MiniIpipInstrument, kind: belongs_to, via: 'answers (20 MiniIpipResponseEntry, discarded after scoring)'}
+- {from: PersonalityPerceptionChallenge, to: PersonalityPerception, kind: has_many, via: '{code} path capability'}
+- {from: PersonalityPerception, to: PersonalityPerceptionFactorPair, kind: has_many, via: 'result (five pairs)'}
+- {from: GroupPicksExperiment, to: GroupPicksQuestionBank, kind: belongs_to, via: 'questionIds (5-20 of 100)'}
+- {from: GroupPicksExperiment, to: GroupPicksResponse, kind: has_many, via: '{code} path capability (max 50)'}
+- {from: GroupPicksExperiment, to: GroupPicksExperiment, kind: has_many, via: 'branches (opaque parent/child lineage, depth)'}
+- {from: ConnectionTopology, to: ConnectionTopologyCell, kind: has_many, via: 'cells (max 144)'}
+- {from: ConnectionTopology, to: ConnectionTopology, kind: belongs_to, via: previousEditionHash}
+- {from: LedgerCheckpoint, to: LedgerCheckpoint, kind: belongs_to, via: previousEditionHash}
+- {from: LedgerCheckpoint, to: DailyEdition, kind: has_one, via: editionId}
+- {from: AssessmentCatalogEntry, to: AssessmentInstrument, kind: has_one, via: 'slug -> /assessments/{slug}/instrument'}
+- {from: AssessmentCatalogEntry, to: AssessmentMethodology, kind: has_one, via: 'slug -> /assessments/{slug}/methodology'}
+- {from: AssessmentInstrument, to: AssessmentItem, kind: has_many, via: items}
+- {from: AssessmentInstrument, to: AssessmentResponseOption, kind: has_many, via: responseOptions}
+- {from: AssessmentScoreRequest, to: AssessmentInstrument, kind: belongs_to, via: 'instrumentId + version'}
+- {from: AssessmentScoreResult, to: AssessmentScaleScore, kind: has_many, via: scales}
+- {from: AssessmentScoreResult, to: AssessmentMethodology, kind: has_one, via: methodologyUrl}

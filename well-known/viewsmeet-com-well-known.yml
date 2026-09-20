@@ -1,0 +1,127 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Live GET probes of the named /.well-known/* path list on viewsmeet.com and www.viewsmeet.com, 2026-09-19,
+  plus the agent-discovery documents ViewsMeet advertises in llms.txt, robots.txt and the developer guide.
+  Every row below is a request that was actually issued; every status is the one returned.
+summary:
+  hosts_probed: 2
+  paths_probed: 22
+  documents_served: 6
+  path_echo_control: passed
+  note: >-
+    viewsmeet.com serves none of the OAuth/OIDC, security.txt, RFC 9727 api-catalog, AAuth or APIs.json
+    documents on the closed list — every one returns a real 404 (a 1,115-byte "View not found" page, and the
+    negative-control path returns the same), so nothing here is a catch-all false positive. What it DOES serve
+    under /.well-known/ is the agent-discovery layer: an A2A v1.0 agent card at both the canonical and legacy
+    paths, an Agent Skills discovery index (v0.2.0 schema with a SHA-256 digest), an ARD/AIR ai-catalog.json
+    (application/ai-catalog+json) named by robots.txt as the Agentmap, and an MCP server card. There is no
+    separate MCP host: the MCP endpoint is https://viewsmeet.com/mcp on the apex, so the apex probe IS the
+    MCP-host probe. www.viewsmeet.com 308-redirects every path to the apex.
+hosts:
+- host: viewsmeet.com
+  role: Website, API host, OpenAPI servers[] host, MCP server host and A2A host (one host for everything)
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/api-catalog.json
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /security.txt
+    status: 404
+  - path: /.well-known/viewsmeet-com-negative-control-9c41e7b2.json
+    status: 404
+    control: negative
+    note: Path that cannot exist returned the same 1,115-byte 404 page — the host does not echo paths.
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/a2a+json; charset=utf-8
+    file: ../a2a/viewsmeet-com-agent-card.json
+    standard: A2A 1.0.0 Agent Card
+  - path: /.well-known/agent.json
+    status: 200
+    content_type: application/a2a+json; charset=utf-8
+    file: ../a2a/viewsmeet-com-agent-card.json
+    standard: A2A pre-0.3 legacy path
+    note: Byte-identical to the canonical card; not saved twice.
+  - path: /.well-known/agent-skills/index.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: viewsmeet-com-agent-skills-index.json
+    standard: Agent Skills discovery 0.2.0 (schemas.agentskills.io/discovery/0.2.0)
+    note: One skill, viewsmeet-participation, with a sha256 digest for the canonical SKILL.md (saved to ../skills/).
+  - path: /.well-known/ai-catalog.json
+    status: 200
+    content_type: application/ai-catalog+json; charset=utf-8
+    file: viewsmeet-com-ai-catalog.json
+    standard: Agentic Resource Discovery (ARD/AIR) catalog, specVersion 1.0
+    note: Five entries — MCP server card, Group Picks REST, Assessments REST, A2A card, Agent Skill. Named by robots.txt as "Agentmap:".
+  - path: /.well-known/mcp/server-card.json
+    status: 200
+    content_type: application/mcp-server-card+json; charset=utf-8
+    file: viewsmeet-com-mcp-server-card.json
+    standard: MCP server card (static.modelcontextprotocol.io/schemas/v1/server-card.schema.json)
+    note: Byte-identical to https://viewsmeet.com/mcp/server-card, the URL the developer guide and ai-catalog cite.
+  - path: /.well-known/mcp.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: viewsmeet-com-mcp.json
+    note: Served, but the body is an empty JSON object ({}) — recorded as served-empty, not as a discovery document.
+- host: www.viewsmeet.com
+  role: Redirect alias
+  documents:
+  - path: /.well-known/security.txt
+    status: 308
+    redirect: https://viewsmeet.com/.well-known/security.txt
+  - path: /.well-known/openid-configuration
+    status: 308
+    redirect: https://viewsmeet.com/.well-known/openid-configuration
+  - path: /.well-known/oauth-authorization-server
+    status: 308
+    redirect: https://viewsmeet.com/.well-known/oauth-authorization-server
+  - path: /.well-known/oauth-protected-resource
+    status: 308
+    redirect: https://viewsmeet.com/.well-known/oauth-protected-resource
+  - path: /.well-known/api-catalog
+    status: 308
+    redirect: https://viewsmeet.com/.well-known/api-catalog
+  - path: /.well-known/ai-plugin.json
+    status: 308
+    redirect: https://viewsmeet.com/.well-known/ai-plugin.json
+  - path: /.well-known/aauth-resource.json
+    status: 308
+    redirect: https://viewsmeet.com/.well-known/aauth-resource.json
+  - path: /.well-known/apis.json
+    status: 308
+    redirect: https://viewsmeet.com/.well-known/apis.json
+  - path: /apis.json
+    status: 308
+    redirect: https://viewsmeet.com/apis.json
+  - path: /.well-known/agent-card.json
+    status: 308
+    redirect: https://viewsmeet.com/.well-known/agent-card.json
+  - path: /.well-known/viewsmeet-com-negative-control-9c41e7b2.json
+    status: 308
+    control: negative
+    redirect: https://viewsmeet.com/.well-known/viewsmeet-com-negative-control-9c41e7b2.json

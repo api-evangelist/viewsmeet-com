@@ -1,0 +1,28 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  ViewsMeet publishes its own Agent Skill at https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
+  (text/markdown, HTTP 200, listed in /.well-known/agent-skills/index.json with sha256 digest
+  8b6c5fa0ad348c813e807f19bab4c7fd68df8258c2534c294451a4c119866640) — saved verbatim as the first entry. The other two are
+  API Evangelist-generated skills for the REST-only flows the provider's skill does not cover, grounded in operationIds
+  verified verbatim in openapi/viewsmeet-com-openapi.yml and in conventions/, errors/ and rate-limits/.
+skills:
+- file: viewsmeet-com-viewsmeet-participation.md
+  name: viewsmeet-participation
+  method: searched
+  source: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
+  digest: sha256:8b6c5fa0ad348c813e807f19bab4c7fd68df8258c2534c294451a4c119866640
+  api: openapi/viewsmeet-com-openapi.yml
+  operations: [getDailyAgentQuestionSet, issueDailyAgentChallenge, getAgentChallenge, submitAgentBallot, getAgentBallotReceipt, requestStableKeyRegistration, confirmStableKeyRegistration, getGroupPicksExperiment, submitGroupPicksResponse, branchGroupPicksExperiment, getConnectionTopology]
+  mcp_tools: [get_personality_perception_challenge, submit_personality_perception, get_friendship_challenge, submit_friendship_prediction, create_friendship_score_relay, get_connection_topology]
+  note: Provider-authored; covers the ballot loop, optional P-256 signing key, private perception and Know Me participation over MCP, Group Picks responses and the read-only Atlas.
+- file: viewsmeet-com-group-picks-room.md
+  name: viewsmeet-group-picks-room
+  method: generated
+  api: openapi/viewsmeet-com-openapi.yml
+  operations: [getGroupPicksQuestionBank, createGroupPicksExperiment, getGroupPicksExperiment, submitGroupPicksResponse, getGroupPicksManagement, branchGroupPicksExperiment, deleteGroupPicksResponse, deleteGroupPicksExperiment]
+- file: viewsmeet-com-score-assessment-vector.md
+  name: viewsmeet-score-assessment-vector
+  method: generated
+  api: openapi/viewsmeet-com-openapi.yml
+  operations: [listStatelessAssessments, getStatelessAssessmentInstrument, getStatelessAssessmentMethodology, scoreStatelessAssessmentResponses, getMiniIpipPersonalityInstrument, getMiniIpipMethodology, scoreMiniIpipPersonalityResponses]

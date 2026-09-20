@@ -1,0 +1,45 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: ViewsMeet
+providerId: viewsmeet-com
+generated: '2026-09-19'
+method: probed
+source: https://viewsmeet.com/developers#limits
+created: '2026-09-19'
+modified: '2026-09-19'
+tags: [Rate Limiting, Agent-native]
+description: >-
+  One published policy, advertised at runtime in IETF-draft RateLimit header fields and observed live on 2026-09-19 on
+  every /api/v1/* response (ratelimit-policy: "minute";q=30;w=60, with RateLimit-Policy, RateLimit and Retry-After
+  listed in access-control-expose-headers). The developer guide: "Protected API, MCP, and A2A responses advertise the
+  current IETF-draft RateLimit-Policy field: 30 requests per 60-second window for each operation-specific abuse key. A
+  429 response includes Retry-After: 60 and a zero-remaining RateLimit field. Public cached documents may be fetched
+  normally and should be revalidated according to their cache headers."
+sources:
+- https://viewsmeet.com/developers#limits
+- https://viewsmeet.com/api/v1/agents/daily (observed headers)
+limit_count: 1
+headers:
+  policy: RateLimit-Policy
+  remaining: RateLimit
+  retryAfter: Retry-After
+  requestId: x-request-id
+observed:
+  ratelimit-policy: '"minute";q=30;w=60'
+  access-control-expose-headers: 'RateLimit-Policy, RateLimit, Retry-After'
+  on: [GET /api/v1/agents/daily, GET /api/v1/assessments, GET /api/v1/ledger, GET /api/v1/experiment/world, GET /api/v1/connections/topology, GET /api/v1/experiments/questions, GET /api/v1/personality/instrument]
+responseCodes:
+  throttled: 429
+  retryAfterSeconds: 60
+limits:
+- name: Per-operation abuse key (REST, MCP and A2A)
+  scope: operation-specific abuse key (per caller, per operation)
+  metric: requests_per_window
+  limit: 30
+  timeFrame: minute
+  window_seconds: 60
+  applies_to: Protected API, MCP and A2A responses; public cached documents are governed by Cache-Control instead
+declared_in_openapi:
+  operations_with_429: [callViewsMeetMcp, scoreStatelessAssessmentResponses, scoreMiniIpipPersonalityResponses, createPersonalityPerceptionChallenge, createGroupPicksExperiment, issueDailyAgentChallenge]
+  note: The 429 responses are declared but the spec declares no rate-limit response headers; overlays/viewsmeet-com-overlay.yaml adds them.

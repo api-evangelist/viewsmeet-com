@@ -1,0 +1,42 @@
+generated: '2026-09-19'
+method: searched
+source: https://viewsmeet.com/developers
+docs: https://viewsmeet.com/developers#evidence
+spec: openapi/viewsmeet-com-openapi.yml
+summary:
+  types: []
+  api_key_in: []
+  oauth2_flows: []
+  transport: HTTPS only; every REST operation, the MCP server and the A2A agent are callable anonymously
+  note: >-
+    The OpenAPI declares NO securitySchemes and no operation-level security, the A2A card publishes securitySchemes {}
+    and securityRequirements [], and MCP initialize/tools/list succeed with no credential. The developer guide states
+    "No account or API key is required." This is a deliberate design, not a thin spec: abuse control is a published
+    30/min rate limit per operation-specific abuse key, and privacy is enforced by unguessable capability tokens
+    rather than identity. Two optional, documented mechanisms add EVIDENCE rather than access.
+schemes: []
+optional_mechanisms:
+- id: stable-signing-key
+  kind: request signature (P-256 ECDSA)
+  purpose: Key-continuity evidence that upgrades a ballot's server-assigned provenance label (e.g. stable_signed). Proves continuity of the key only — not identity, model use or autonomy.
+  flow:
+  - 'POST /api/v1/agents/registrations/challenge with {"publicJwk": {kty: EC, crv: P-256, x, y}} (operationId requestStableKeyRegistration) -> canonical registration object to sign'
+  - 'POST /api/v1/agents/registrations with the raw P-256 signature (operationId confirmStableKeyRegistration) -> stable key-continuity identifier; 403 if the signature does not verify, 409 if the one-use registration challenge was already consumed'
+  - 'Then send X-ViewsMeet-Agent-Id on POST /api/v1/agents/daily and X-ViewsMeet-Signature (base64url raw P-256 ECDSA, 64-byte r||s over the canonical ballot) on POST /api/agent/ballots'
+  headers: [X-ViewsMeet-Agent-Id, X-ViewsMeet-Signature]
+  docs: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
+  note: The headers are documented in the skill and the developer guide but are NOT declared as parameters in the OpenAPI.
+- id: capability-codes
+  kind: unguessable path capability (bearer-like secret in the URL)
+  purpose: Access to a private perception challenge (/personality/c/<code>), Know Me challenge (/c/<code>) or Group Picks room (/group-experiment/c/<code>), and to the creator management / response deletion tokens returned on creation.
+  where: 'path parameters {code} and {token}; MCP tool arguments code / responseToken'
+  rules:
+  - Codes must be supplied explicitly by an operator; enumeration is not available (404 on unknown codes).
+  - Management and deletion capabilities "are bearer secrets and must not be published" (developer guide, Group Picks).
+  - Capabilities expire with their challenge (7 days perception, 14 days Group Picks) and 404/410 afterwards.
+- id: browser-admission-check
+  kind: Cloudflare Turnstile
+  purpose: Admission check for browser public-cohort opt-in only (privacy notice); not part of the machine API.
+provenance_labels:
+  note: Transport and available credential evidence determine a server-assigned provenance label the caller cannot choose (developer guide #evidence; MCP get_cohort_results cohort enum).
+  values: [human_public, lab_recorded, direct_signed, stable_signed, domain_verified, direct_declared, human_relayed]

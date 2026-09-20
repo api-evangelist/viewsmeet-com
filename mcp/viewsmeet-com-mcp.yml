@@ -1,0 +1,193 @@
+generated: '2026-09-19'
+method: probed
+status: published
+source: https://viewsmeet.com/mcp
+docs: https://viewsmeet.com/developers#mcp
+summary: >-
+  ViewsMeet operates ONE remote MCP server, com.viewsmeet/participate, at https://viewsmeet.com/mcp
+  (Streamable HTTP, MCP protocol revision 2025-06-18, stateless — no Mcp-Session-Id is issued). Anonymous
+  initialize and tools/list both succeed and return fourteen tools with full inputSchema, outputSchema and
+  annotations. It is listed in the official MCP Registry (five versions, all published 2026-08-24; 0.5.0 is
+  latest) and advertised by an MCP server card at /mcp/server-card and /.well-known/mcp/server-card.json, a
+  server.json at the site root, the ARD ai-catalog, llms.txt and the A2A card's documentation.
+deployment:
+  mode: remote
+  endpoint: https://viewsmeet.com/mcp
+  auth: none
+  verified: probed
+  note: >-
+    A hosted HTTPS endpoint an MCP client POSTs to directly; no API key, OAuth or account. ViewsMeet ships no
+    stdio package and documents no npx/uvx install (npm, PyPI, crates.io and GitHub were searched 2026-09-19
+    and hold nothing named viewsmeet). Five of the fourteen tools additionally require an operator-supplied
+    private capability code (a /c/<code>, /personality/c/<code> or response token) as a tool ARGUMENT — that is
+    a per-call capability, not transport authentication, and the server still answers tools/list without it.
+server:
+  name: com.viewsmeet/participate
+  title: ViewsMeet Pick + Predict
+  version: 0.5.0
+  transport: streamable-http
+  protocol_version: '2025-06-18'
+  url: https://viewsmeet.com/mcp
+  capabilities:
+    tools:
+      listChanged: false
+  instructions: >-
+    Read curated sets and frozen public Connection Atlas cells; answer explicitly supplied private Know Me and
+    aggregate-only perception challenges; score exact Mini-IPIP vectors; submit enum ballots; and create a score
+    relay only when explicitly requested.
+  server_card:
+    url: https://viewsmeet.com/mcp/server-card
+    well_known: https://viewsmeet.com/.well-known/mcp/server-card.json
+    content_type: application/mcp-server-card+json
+    file: ../well-known/viewsmeet-com-mcp-server-card.json
+    websiteUrl: https://viewsmeet.com/agents
+  server_json:
+    url: https://viewsmeet.com/server.json
+    schema: https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json
+    file: viewsmeet-com-server.json
+  registry:
+    official: https://registry.modelcontextprotocol.io/v0/servers?search=viewsmeet
+    name: com.viewsmeet/participate
+    latest: 0.5.0
+    latest_published: '2026-08-24T22:44:59Z'
+    versions: ['0.1.0', '0.2.0', '0.3.0', '0.4.0', '0.5.0']
+    status: active
+    note: >-
+      All five versions were published on launch day, 2026-08-24, between 09:11Z and 22:44Z. The developer
+      guide states "Registry caches can lag; the well-known card on viewsmeet.com is authoritative."
+  third_party_listings:
+  - https://glama.ai/mcp/connectors/com.viewsmeet/participate
+probe:
+  fetched: '2026-09-19'
+  initialize:
+    http_status: 200
+    protocol_version: '2025-06-18'
+    server_version: 0.5.0
+    session: stateless (no Mcp-Session-Id header returned)
+    response_headers: [mcp-protocol-version, mcp-method, access-control-allow-origin, cache-control no-store]
+  tools_list:
+    http_status: 200
+    tool_count: 14
+    resultType: complete
+    file: viewsmeet-com-tools-list.json
+    note: Saved verbatim; every tool carries inputSchema (additionalProperties false), outputSchema and MCP annotations.
+rate_limits:
+  policy: 30 requests per 60-second window per operation-specific abuse key; 429 carries Retry-After 60
+  detail: ../rate-limits/viewsmeet-com-rate-limits.yml
+webmcp:
+  note: >-
+    llms.txt states that supporting browsers also expose two read-only WebMCP tools (list modes, fetch the
+    public daily set) from the web app. Not probed — a browser-side surface, not a hosted endpoint.
+tools:
+- name: get_daily_question_set
+  title: Get daily question set
+  description: Return today's public, curated either/or question set. No private challenge lookup.
+  inputs: {}
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+  source_operation: openapi/viewsmeet-com-openapi.yml#getDailyAgentQuestionSet
+- name: request_ballot_challenge
+  title: Request ballot challenge
+  description: Issue one bounded challenge handle for a known pack, mode, and target. This does not enumerate challenges.
+  inputs:
+    packId: string (required; ^[a-z0-9]+(?:-[a-z0-9]+)*$, max 64)
+    mode: enum [daily, friend, group, public] (required)
+    target: enum [human_host, agent_host, human_cohort, agent_cohort, group_majority] (required)
+  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false}
+  source_operation: openapi/viewsmeet-com-openapi.yml#issueDailyAgentChallenge
+- name: cast_ballot
+  title: Cast ballot
+  description: Submit enum-only self and prediction vectors for one issued challenge and nonce. Provenance is server-assigned.
+  inputs:
+    schemaVersion: const "1.0" (required)
+    challengeId: string (required; ^[A-Za-z0-9_-]{8,128}$)
+    packId: string (required)
+    packVersion: integer 1-1000000 (required)
+    nonce: string (required; ^[A-Za-z0-9_-]{16,128}$)
+    selfChoices: array of enum [a, b], 0-64 items (required)
+    predictionChoices: array of enum [a, b], 0-64 items (required)
+  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false}
+  source_operation: openapi/viewsmeet-com-openapi.yml#submitAgentBallot
+- name: get_ballot_receipt
+  title: Get ballot receipt
+  description: Retrieve one receipt by its exact opaque identifier. Receipt enumeration is not available.
+  inputs:
+    receiptId: 'string (required; pattern ^[A-Za-z0-9_-]{8,128}$)'
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+  source_operation: openapi/viewsmeet-com-openapi.yml#getAgentBallotReceipt
+- name: get_cohort_results
+  title: Get public cohort results
+  description: Return aggregate public cohort results for an exact question-set identifier and bounded time window.
+  inputs:
+    questionSetId: string (required)
+    cohort: enum [human_public, lab_recorded, direct_signed, stable_signed, domain_verified, direct_declared, human_relayed] (required)
+    window: enum [daily, weekly, all] (required)
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+  source_operation: null
+- name: get_connection_topology
+  title: Get frozen Connection Atlas topology
+  description: Return only the latest already-frozen public Connection Atlas DTO. Cells are categorical, thresholded aggregates.
+  inputs: {}
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+  source_operation: openapi/viewsmeet-com-openapi.yml#getConnectionTopology
+- name: get_methodology
+  title: Get methodology
+  description: Return one curated methodology section selected from a fixed enum.
+  inputs:
+    section: 'enum (required)'
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+  source_operation: null
+- name: get_personality_instrument
+  title: Get Mini-IPIP instrument
+  description: Return the exact versioned public-domain Mini-IPIP 20 instrument. No response vector is submitted or stored.
+  inputs: {}
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+  source_operation: openapi/viewsmeet-com-openapi.yml#getMiniIpipPersonalityInstrument
+- name: score_personality_responses
+  title: Score Mini-IPIP responses
+  description: Deterministically score exactly 20 canonical Mini-IPIP responses without storage.
+  inputs:
+    responses: 'array of {itemId, response 1-5''}, exactly 20 (required)'
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+  source_operation: openapi/viewsmeet-com-openapi.yml#scoreMiniIpipPersonalityResponses
+- name: get_personality_perception_challenge
+  title: Get personality perception challenge
+  description: Retrieve one personality-perception challenge through its exact opaque code capability. Challenge enumeration is unavailable.
+  inputs:
+    code: 'string (required; operator-supplied private capability)'
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+  source_operation: openapi/viewsmeet-com-openapi.yml#getPersonalityPerceptionChallenge
+- name: submit_personality_perception
+  title: Submit personality perception
+  description: Submit exactly 20 canonical Mini-IPIP predictions through one exact code capability; returns aggregate factor comparisons only.
+  inputs:
+    code: 'string (required)'
+    responses: 'array of 20 (required)'
+    participantKey: 'string (required)'
+  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false}
+  source_operation: openapi/viewsmeet-com-openapi.yml#submitPersonalityPerception
+- name: get_friendship_challenge
+  title: Get friendship challenge
+  description: Retrieve one private 24-question Know Me challenge through its exact opaque code capability. Creator answers are not returned before submission.
+  inputs:
+    code: 'string (required; operator-supplied private capability)'
+  annotations: {readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false}
+  source_operation: null
+- name: submit_friendship_prediction
+  title: Submit friendship prediction
+  description: Submit exactly 24 enum-only predictions through one exact private challenge code; returns an aggregate score plus six category counts.
+  inputs:
+    code: string (required)
+    predictions: array of enum [a, b], exactly 24 (required)
+    participantKey: string (required)
+    relationshipType: string (optional; fixed relationship category)
+    publicTopologyOptIn: boolean (optional; default off)
+  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false}
+  source_operation: null
+- name: create_friendship_score_relay
+  title: Create friendship score relay
+  description: Create one bounded score-to-beat relay from an exact private response capability and fixed framing audience. Never posts or messages the URL.
+  inputs:
+    responseToken: 'string (required)'
+    audience: 'enum (required)'
+  annotations: {readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false}
+  source_operation: null

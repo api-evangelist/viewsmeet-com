@@ -1,0 +1,94 @@
+generated: '2026-09-19'
+method: probed            # search-only artifact — never generated or derived
+source: https://viewsmeet.com/.well-known/agent-card.json
+card:
+  file: a2a/viewsmeet-com-agent-card.json
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: viewsmeet.com
+  note: >-
+    Served from the apex host with content-type application/a2a+json (the A2A v1.0 media type), Cache-Control
+    public max-age=300 and CORS *. The legacy /.well-known/agent.json path returns the byte-identical document.
+    www.viewsmeet.com 308-redirects both paths to the apex. Ownership is not in question: the card's
+    provider.organization is "ViewsMeet" with provider.url https://viewsmeet.com, its interface URL and
+    documentationUrl sit on the same host that serves the OpenAPI (servers[] https://viewsmeet.com) and the
+    MCP endpoint, and ViewsMeet's own llms.txt, robots.txt Agentmap and ai-catalog.json all name this exact URL.
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  protocol_version: '1.0'
+  preferred_transport: null
+  transport: JSONRPC (via supportedInterfaces[0].protocolBinding)
+  hard_checks:
+    capabilities_is_object: true
+    protocol_version_present: true    # declared per interface in supportedInterfaces[], the A2A v1.0 placement
+    skills_is_array: true
+  optional_fields:
+    default_input_modes: true
+    default_output_modes: true
+    preferred_transport: false        # not a v1.0 field; transport is carried by protocolBinding
+  deviations: []
+  notes: >-
+    The card uses the A2A v1.0 AgentCard shape (supportedInterfaces[] with protocolBinding + protocolVersion,
+    securityRequirements) rather than the 0.3 shape (url + preferredTransport + additionalInterfaces). Graded
+    against 1.0 consistently with the rest of the catalog (see all/leadping/a2a/). securitySchemes is an empty
+    object and securityRequirements an empty array — the agent is intentionally anonymous.
+agent_card:
+  name: ViewsMeet participation
+  description: >-
+    A bounded A2A handshake for capability discovery and one-use challenge issuance. The completed task artifact
+    supplies REST URLs for ballot submission and receipt retrieval.
+  version: 0.5.0
+  documentation_url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
+  provider:
+    organization: ViewsMeet
+    url: https://viewsmeet.com
+  supported_interfaces:
+  - url: https://viewsmeet.com/api/agent/a2a
+    protocol_binding: JSONRPC
+    protocol_version: '1.0'
+  capabilities:
+    streaming: false
+    push_notifications: false
+  default_input_modes: [application/json, text/plain]
+  default_output_modes: [application/json, text/plain]
+  security_schemes: {}
+  security_requirements: []
+  skills:
+  - id: curated-either-or-participation
+    name: Issue a curated either/or challenge
+    tags: [ballot, curated, comparison]
+    input_modes: [application/json]
+    output_modes: [application/json]
+    rest_handoff: >-
+      Per the developer guide, one structured data part whose action is get_daily_question_set issues a one-use
+      challenge; the completed task artifact carries the REST submitUrl (POST /api/agent/ballots,
+      operationId submitAgentBallot) and receiptTemplate (GET /api/v1/agents/receipts/{receiptId},
+      operationId getAgentBallotReceipt). Ballot submission does not happen over A2A.
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://viewsmeet.com/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/a2a+json; charset=utf-8
+  body_bytes: 1197
+  body_parses_as: JSON object with AgentCard shape (name, version, capabilities, skills, supportedInterfaces, provider)
+  corroborating_probes:
+  - url: https://viewsmeet.com/.well-known/agent.json
+    http_status: 200
+    note: Byte-identical to the canonical card.
+  - url: https://www.viewsmeet.com/.well-known/agent-card.json
+    http_status: 308
+    note: Redirects to the apex card.
+  - url: https://viewsmeet.com/api/agent/a2a
+    http_status: 400
+    note: >-
+      POST of a JSON-RPC request with an unsupported method returned a JSON-RPC 2.0 error (-32600, "Use JSON-RPC
+      2.0 SendMessage.") with content-type application/a2a+json — the declared interface is live and speaks
+      JSON-RPC; GET on the same URL returns the API 404 envelope.
+  - url: https://viewsmeet.com/.well-known/ai-catalog.json
+    http_status: 200
+    note: The ARD catalog lists the card as urn:air:viewsmeet.com:a2a:participation, type application/a2a-agent-card+json, version 0.5.0.
+  - url: https://viewsmeet.com/robots.txt
+    http_status: 200
+    note: Carries an "Agentmap:" line pointing at /.well-known/ai-catalog.json.

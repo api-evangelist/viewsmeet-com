@@ -1,0 +1,123 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://viewsmeet.com/developers, /openapi.json, /.well-known/* and /mcp probed live on 2026-09-19, cross-checked
+  against openapi/viewsmeet-com-openapi.yml and the observed response headers on /api/v1/* documents.
+standards:
+- id: openapi-3.1
+  name: OpenAPI 3.1
+  conforms: true
+  evidence: >-
+    https://viewsmeet.com/openapi.json (HTTP 200, application/json) declares "openapi": "3.1.0", info.version 0.5.0,
+    28 paths / 32 operations, 24 component schemas, unique operationIds, a summary on every operation and a
+    description on most. It declares NO securitySchemes (the API is intentionally anonymous) and only 6 of 32
+    operations carry tags.
+- id: mcp-2025-06-18
+  name: Model Context Protocol (Streamable HTTP, revision 2025-06-18)
+  conforms: true
+  evidence: >-
+    POST https://viewsmeet.com/mcp initialize returned protocolVersion 2025-06-18 and serverInfo com.viewsmeet/participate
+    0.5.0; tools/list returned 14 tools with inputSchema, outputSchema and annotations (readOnlyHint, destructiveHint,
+    idempotentHint, openWorldHint) anonymously. Responses carry mcp-protocol-version and mcp-method headers.
+- id: mcp-server-card
+  name: MCP server card (static.modelcontextprotocol.io/schemas/v1/server-card.schema.json)
+  conforms: true
+  evidence: >-
+    https://viewsmeet.com/mcp/server-card and /.well-known/mcp/server-card.json return HTTP 200 with content-type
+    application/mcp-server-card+json, $schema pointing at the v1 server-card schema, and a streamable-http remote.
+- id: mcp-server-json-2025-12-11
+  name: MCP Registry server.json (schemas/2025-12-11/server.schema.json)
+  conforms: true
+  evidence: >-
+    https://viewsmeet.com/server.json validates the $schema URL and matches the official registry entry
+    com.viewsmeet/participate 0.5.0 (registry.modelcontextprotocol.io, five versions published 2026-08-24).
+- id: a2a-1.0
+  name: Agent2Agent protocol 1.0 (Agent Card + JSON-RPC binding)
+  conforms: true
+  evidence: >-
+    /.well-known/agent-card.json served as application/a2a+json with the v1.0 AgentCard shape (supportedInterfaces[]
+    protocolBinding JSONRPC / protocolVersion 1.0, capabilities object, skills array, securityRequirements). The
+    interface https://viewsmeet.com/api/agent/a2a answers JSON-RPC 2.0 with an application/a2a+json error envelope.
+    Graded conformant in a2a/viewsmeet-com-a2a.yml.
+- id: agent-skills-discovery-0.2.0
+  name: Agent Skills discovery index (schemas.agentskills.io/discovery/0.2.0)
+  conforms: true
+  evidence: >-
+    /.well-known/agent-skills/index.json (HTTP 200) declares the 0.2.0 discovery $schema and one skill-md entry with a
+    sha256 digest; the referenced SKILL.md (text/markdown) carries name/description frontmatter.
+- id: ard-ai-catalog-1.0
+  name: Agentic Resource Discovery ai-catalog (specVersion 1.0)
+  conforms: true
+  evidence: >-
+    /.well-known/ai-catalog.json (HTTP 200, application/ai-catalog+json) with five typed entries; robots.txt names it
+    as "Agentmap:".
+- id: ietf-ratelimit-headers
+  name: IETF httpapi RateLimit header fields (draft) — RateLimit-Policy / RateLimit / Retry-After
+  conforms: true
+  evidence: >-
+    Observed live on GET /api/v1/agents/daily, /api/v1/assessments, /api/v1/ledger and others: `ratelimit-policy:
+    "minute";q=30;w=60` with access-control-expose-headers listing RateLimit-Policy, RateLimit, Retry-After. The
+    developer guide states 429 responses include Retry-After: 60 and a zero-remaining RateLimit field.
+- id: jsonrpc-2.0
+  name: JSON-RPC 2.0
+  conforms: true
+  evidence: Both /mcp and /api/agent/a2a answer JSON-RPC 2.0 request/error envelopes (observed error code -32600 on the A2A endpoint).
+- id: jwk-rfc7517
+  name: RFC 7517 JSON Web Key (P-256 public keys for stable agent signing)
+  conforms: true
+  evidence: >-
+    components.schemas.P256PublicJwk (kty, crv, x, y required) is the body of requestStableKeyRegistration; the skill
+    documents X-ViewsMeet-Signature as base64url raw P-256 ECDSA (64-byte r||s).
+- id: rfc9457
+  name: RFC 9457 Problem Details
+  conforms: false
+  evidence: >-
+    Errors use a custom envelope — components.schemas.ProtocolError {error, message, issues[]} (observed on a live 422)
+    and a nested {error: {code, message}} on router 404s — with content-type application/json, not application/problem+json.
+- id: oauth2
+  name: OAuth 2.0
+  conforms: false
+  evidence: No securitySchemes in the OpenAPI; /.well-known/oauth-authorization-server and oauth-protected-resource both 404. The API, MCP server and A2A agent are anonymous by design.
+- id: oidc
+  name: OpenID Connect
+  conforms: false
+  evidence: /.well-known/openid-configuration 404.
+- id: rfc9116
+  name: RFC 9116 security.txt
+  conforms: false
+  evidence: /.well-known/security.txt and /security.txt both 404.
+- id: rfc9727
+  name: RFC 9727 API catalog
+  conforms: false
+  evidence: /.well-known/api-catalog and api-catalog.json both 404 (the ARD ai-catalog.json is a different, non-RFC format).
+- id: rfc9728
+  name: RFC 9728 protected resource metadata
+  conforms: false
+  evidence: /.well-known/oauth-protected-resource 404 on the MCP host (which is the apex).
+- id: apis-json
+  name: APIs.json
+  conforms: false
+  evidence: /apis.json, /apis.yml and /.well-known/apis.json all 404.
+- id: rfc8594
+  name: RFC 8594 Sunset header / Deprecation header
+  conforms: false
+  status: committed-not-yet-exercised
+  evidence: >-
+    The developer guide (#versioning) states that before removing a published version ViewsMeet "will document the
+    replacement and advertise deprecation and sunset timing in response headers." No operation is deprecated today, so
+    no Sunset/Deprecation header has been observed.
+- id: idempotency-key
+  name: Client idempotency key (Idempotency-Key header)
+  conforms: false
+  evidence: >-
+    No Idempotency-Key header. Replay protection is server-issued — a one-use challenge nonce (409 "Nonce already used")
+    and per-room participant keys (409 "Duplicate participant") — see conventions/viewsmeet-com-conventions.yml.
+domain_standards:
+  note: >-
+    No API-level domain standard applies to this market (consumer social games / psychometric self-report). The
+    instruments themselves are the public-domain IPIP scales (Mini-IPIP 20, IPIP-50, IPIP-IPC 32) and the 36QB6, whose
+    sources the API exposes via the methodology operations — a content standard, not a contract standard, and not
+    recorded as a domain_standard_conformance signal. Nothing is asserted here to fill the slot.
+compliance_program:
+  published: false
+  note: 'No SOC 2 / ISO 27001 / trust center / VDP found (probe-security-programs.py on 2026-09-19 reported vdp=none, trust=none). No Compliance pointer emitted.'

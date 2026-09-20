@@ -1,0 +1,73 @@
+generated: '2026-09-19'
+method: derived
+format: custom-json-envelope
+source: >-
+  Derived from the 4xx/5xx responses declared across openapi/viewsmeet-com-openapi.yml (every error response references
+  components.schemas.ProtocolError) and confirmed against two live unauthenticated responses on 2026-09-19: a 422 from
+  POST /api/agent/ballots with an empty body, and a 404 from an unknown /api/v1/ route. ViewsMeet does not use RFC 9457.
+envelopes:
+- name: ProtocolError
+  media_type: application/json
+  shape: '{ "error": string (machine code), "message": string, "issues"?: [ { "path": string, "code": string, "message": string } ] }'
+  declared_by: components.schemas.ProtocolError (additionalProperties false; error + message required)
+  observed: >-
+    422 {"error":"invalid_ballot","message":"Ballot failed structural validation.","issues":[{"path":"schemaVersion",
+    "code":"unsupported_version","message":"Expected '1.0'."}, ...]}
+- name: RouterNotFound
+  media_type: application/json
+  shape: '{ "error": { "code": "NOT_FOUND", "message": string } }'
+  observed: 'GET /api/v1/nonexistent-probe -> 404 {"error":{"code":"NOT_FOUND","message":"That API or discovery route does not exist."}}'
+  note: Nested shape used by the router for unknown API/discovery routes; differs from ProtocolError.
+- name: JSON-RPC error
+  media_type: application/json (MCP) / application/a2a+json (A2A)
+  shape: '{ "jsonrpc": "2.0", "id": ..., "error": { "code": int, "message": string } }'
+  observed: 'POST /api/agent/a2a with an unsupported method -> 400 {"jsonrpc":"2.0","id":1,"error":{"code":-32600,"message":"Use JSON-RPC 2.0 SendMessage."}}'
+issue_codes_observed:
+- unsupported_version
+- invalid_identifier
+- invalid_version
+- invalid_nonce
+- invalid_type
+problems:
+- status: 400
+  title: Invalid request body
+  meaning: Structural validation failed — wrong instrument id/version, incomplete vector, malformed JWK, or a non-enum choice.
+  declared_on: [callViewsMeetMcp, scoreStatelessAssessmentResponses, scoreMiniIpipPersonalityResponses, createPersonalityPerceptionChallenge, submitPersonalityPerception, reportPersonalityPerceptionChallenge, createGroupPicksExperiment, submitGroupPicksResponse, requestStableKeyRegistration]
+  remediation: Read issues[].path and issues[].code; resubmit the complete versioned vector or a strict P-256 public JWK.
+- status: 403
+  title: Registration signature rejected
+  meaning: The raw P-256 signature over the canonical registration object did not verify.
+  declared_on: [confirmStableKeyRegistration]
+  remediation: Sign the returned canonical object exactly as specified (base64url raw ECDSA r||s, 64 bytes) and confirm once.
+- status: 404
+  title: Not found / capability invalid or expired
+  meaning: Unknown route or assessment slug, or an opaque code / token / receipt / challenge id that does not resolve. Enumeration is not possible by design.
+  declared_on: [callViewsMeetMcp, getStatelessAssessmentInstrument, getStatelessAssessmentMethodology, scoreStatelessAssessmentResponses, getPersonalityPerceptionResult, deletePersonalityPerceptionResult, getPersonalityPerceptionManagement, deletePersonalityPerceptionChallenge, getGroupPicksExperiment, branchGroupPicksExperiment, submitGroupPicksResponse, deleteGroupPicksResponse, getGroupPicksManagement, deleteGroupPicksExperiment, getAgentChallenge, getAgentBallotReceipt]
+  remediation: Use only the exact operator-supplied code or the identifier returned by the issuing call; do not retry with guessed identifiers.
+- status: 409
+  title: Conflict — nonce consumed, duplicate participant, or room full
+  meaning: 'Spec descriptions: "Nonce already used or challenge closed" (ballots); "Duplicate participant, full, or expired room" (Group Picks); "Challenge expired, consumed, or conflicting" (registration / perception).'
+  declared_on: [submitAgentBallot, confirmStableKeyRegistration, submitPersonalityPerception, submitGroupPicksResponse, branchGroupPicksExperiment]
+  remediation: Do not resubmit a consumed nonce with different answers; keep the receipt from the accepted submission. Request a new challenge if a new ballot is genuinely intended.
+- status: 410
+  title: Gone — challenge expired, deleted or unavailable
+  meaning: The issued challenge or private perception challenge is past its expiry or was hard-deleted by its creator.
+  declared_on: [getAgentChallenge, submitAgentBallot, getPersonalityPerceptionChallenge, submitPersonalityPerception]
+  remediation: Issue a fresh challenge (POST /api/v1/agents/daily) or ask the operator for a live code.
+- status: 422
+  title: invalid_ballot — ballot failed structural validation
+  meaning: One or more ballot fields fail the strict schema (schemaVersion must be "1.0"; identifiers 8-128 URL-safe chars; nonce 16-128; choices arrays of a/b).
+  declared_on: [submitAgentBallot]
+  observed: true
+  remediation: Fix every entry in issues[] before resubmitting; the nonce is not consumed by a 422.
+- status: 429
+  title: Rate limit exceeded
+  meaning: More than 30 requests in a 60-second window for one operation-specific abuse key.
+  declared_on: [callViewsMeetMcp, scoreStatelessAssessmentResponses, scoreMiniIpipPersonalityResponses, createPersonalityPerceptionChallenge, createGroupPicksExperiment, issueDailyAgentChallenge]
+  headers: [Retry-After (60), RateLimit (remaining 0), RateLimit-Policy]
+  remediation: Honour Retry-After; public cached documents (Cache-Control public) may be revalidated normally instead.
+- status: 503
+  title: Not yet available
+  meaning: No Connection Atlas edition has been frozen yet, or scoring is temporarily unavailable. The skill instructs agents to report the bounded unavailable error and never substitute sample data.
+  declared_on: [getConnectionTopology, scoreStatelessAssessmentResponses]
+  remediation: Retry later; the topology endpoint otherwise returns status "collecting" with empty cells rather than an error.

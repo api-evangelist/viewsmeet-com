@@ -1,0 +1,146 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: https://viewsmeet.com/privacy
+signals:
+  global_privacy_control:
+    honored: true
+    url: https://viewsmeet.com/privacy#x-measurement
+    section: Automatic X advertising measurement on eligible public pages
+    evidence:
+    - source: https://viewsmeet.com/privacy
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: '"Global Privacy Control or browser Do Not Track causes restricted-data-use signaling where supported."'
+    note: >-
+      Set from the published statement only — no Sec-GPC header was sent. The commitment is scoped: it governs the
+      X (Twitter) advertising pixel and Conversion API bridge that the notice discloses, and is hedged "where
+      supported". The notice also states private capability pages never load the third-party script.
+  data_subject_request:
+    url: https://viewsmeet.com/privacy
+    section: Your controls
+    channel: self-service capability tokens and API deletion operations (no identity-based request process; hello@viewsmeet.com is published as optional contact on /press)
+    api: 'DELETE /api/v1/personality/perceptions/{token}, DELETE /api/v1/personality/manage/{token}, DELETE /api/v1/experiments/responses/{token}, DELETE /api/v1/experiments/manage/{token} (operationIds deletePersonalityPerceptionResult, deletePersonalityPerceptionChallenge, deleteGroupPicksResponse, deleteGroupPicksExperiment in openapi/viewsmeet-com-openapi.yml)'
+    rights_named: [deletion of own response, deletion of own challenge or room (cascading), local token clearance]
+    stated_sla: null
+    evidence:
+    - source: https://viewsmeet.com/privacy
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: >-
+        "Use the local response control to delete your challenge response and invalidate relays made from it. Use the
+        creator control to delete a challenge and every relay into it. Clear local storage to remove tokens from the
+        current device, understanding that this also removes local deletion access."
+    - source: https://viewsmeet.com/openapi.json
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: 'Four DELETE operations described as "Hard-delete ..." with 204 responses.'
+    note: >-
+      ViewsMeet runs without accounts or identifiers, so there is no access/correction/portability request channel in
+      the GDPR sense — the published mechanism is immediate self-service hard deletion via unguessable capability
+      tokens, exposed both in-product and as documented API operations. /privacy/requests is 404. Recorded because the
+      substance (a working, documented deletion path) is present; the absence of an identity-based request process
+      and of a response SLA is noted rather than filled.
+  subprocessors:
+    url: https://viewsmeet.com/privacy#operations
+    section: Operations / X measurement (privacy notice dated Aug 27, 2026)
+    dated: '2026-08-27'
+    entries:
+    - {vendor: Cloudflare, purpose: 'Workers hosting, D1 database, Analytics Engine, Turnstile admission check, Email Routing for hello@viewsmeet.com, edge country-code derivation', location: edge (country code retained only)}
+    - {vendor: X Corp, purpose: 'X base Pixel on eligible public pages and a first-party Conversion API bridge sending five coarse event classes', location: not stated}
+    evidence:
+    - source: https://viewsmeet.com/privacy
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: >-
+        "Emailing hello@viewsmeet.com is optional and never required to play. Cloudflare Email Routing forwards the
+        sender, recipient, subject, message content, and normal email headers to a verified destination mailbox outside
+        the gameplay database." / "Starting August 26, 2026, eligible production pages load the X base Pixel for event
+        source reoq6 automatically ... A separate first-party Conversion API bridge sends five coarse event classes".
+    - source: https://viewsmeet.com/press
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: '"Technology: Cloudflare Workers, D1, Analytics Engine, WebAuthn passkeys, MCP, A2A, REST, and OpenAPI."'
+    note: >-
+      Named third parties with purposes inside a dated privacy notice, not a standalone subprocessor table
+      (/legal/subprocessors and /subprocessors both 404). Recorded on the same basis as other prose-form lists in the
+      catalog.
+  notice_and_action:
+    url: https://viewsmeet.com/support#reports
+    section: Product help / safety report
+    api: 'POST /api/v1/personality/challenges/{code}/report (operationId reportPersonalityPerceptionChallenge, 202 Accepted, fixed-reason body)'
+    evidence:
+    - source: https://viewsmeet.com/pricing.md
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: '"a live private challenge has a fixed in-product safety report control."'
+    - source: https://viewsmeet.com/openapi.json
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: 'operation summary "Submit one fixed-reason safety report"; privacy notice states challenges "are hard-deleted with their responses and safety reports".'
+    note: >-
+      A working, documented report mechanism for user-created challenges, exposed in-product and as an API operation.
+      It is not a DSA-style notice-and-action page (/legal/report-content 404) and no handling SLA is stated.
+  ai_transparency:
+    url: https://viewsmeet.com/methodology#packs
+    section: Reviewed, immutable daily question packs
+    evidence:
+    - source: https://viewsmeet.com/methodology
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: >-
+        "A generator proposes exactly five low-stakes either/or questions for the next day. Deterministic filters
+        reject sensitive topics ... before a separate model configuration can review the candidate. A generated pack
+        opens only when the generator parses exactly, every deterministic check passes, and the independent reviewer
+        returns its exact approval code. Any failure commits one of seven prewritten fallback packs instead. The public
+        generation audit records model/configuration versions, prompt hashes, output hashes, filter findings, review
+        decision, and the selected pack; raw model text is never stored."
+    - source: https://viewsmeet.com/developers
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: '"Complete vectors and returned scale values are not written to an account, public data, a friend link, D1, or an AI model."'
+    note: >-
+      A published disclosure of where AI is used (daily pack generation and independent model review, with an audit
+      record) and where it is not (scoring is deterministic; user vectors are never sent to a model). Carried on the
+      methodology page rather than a dedicated /ai page (/ai and /ai/transparency both 404).
+probed_absent:
+- signal: sbom
+  urls:
+  - {url: 'https://viewsmeet.com/security/sbom', status: 404}
+  - {url: 'https://viewsmeet.com/sbom', status: 404}
+  note: No bill of materials published. Never derived — search only.
+- signal: support_lifetime
+  urls:
+  - {url: 'https://viewsmeet.com/developers#versioning', status: 200}
+  note: >-
+    The versioning section commits to advertising deprecation and sunset timing before removing a version but states no
+    support period; the Terms say the service "may be ... changed, or discontinued". No period is recorded.
+- signal: accessibility_conformance
+  urls:
+  - {url: 'https://viewsmeet.com/accessibility', status: 404}
+  - {url: 'https://viewsmeet.com/accessibility/vpat', status: 404}
+  - {url: 'https://viewsmeet.com/vpat', status: 404}
+  note: The support page has an "accessibility" anchor with product-help prose; no conformance report or VPAT is published.
+- signal: training_data_summary
+  note: No training-data summary is published; ViewsMeet consumes model configurations for pack generation and states user data is never sent to a model.
+- signal: data_residency
+  urls:
+  - {url: 'https://viewsmeet.com/docs/data-residency', status: 404}
+  note: The privacy notice discloses Cloudflare edge processing and country-code-only retention but offers no residency choice.
+- signal: incident_notification
+  urls:
+  - {url: 'https://viewsmeet.com/legal/dpa', status: 404}
+  - {url: 'https://viewsmeet.com/dpa', status: 404}
+  note: No DPA and no stated breach-notification SLA.
+- signal: age_assurance
+  note: Neither the Terms nor the privacy notice states a minimum age or an age-assurance mechanism.
+- signal: transparency_report
+  urls:
+  - {url: 'https://viewsmeet.com/transparency', status: 404}
+  note: >-
+    The public ledger (/api/v1/ledger), frozen editions and generation audit are data-integrity transparency, not a
+    content-moderation transparency report; not recorded under this signal.
+- signal: exit_assistance
+  note: >-
+    No export or switching documentation. The service holds no account data to export; public experiment data is
+    published as JSON and CSV for anyone, which is open data rather than customer exit assistance.

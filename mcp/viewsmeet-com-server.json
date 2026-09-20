@@ -1,0 +1,13 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.viewsmeet/participate",
+  "title": "ViewsMeet Pick + Predict",
+  "description": "Read frozen Atlas cells, answer private quizzes, score Mini-IPIP vectors, and cast enum ballots.",
+  "version": "0.5.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://viewsmeet.com/mcp"
+    }
+  ]
+}

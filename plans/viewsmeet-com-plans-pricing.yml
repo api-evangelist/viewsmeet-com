@@ -1,0 +1,56 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: ViewsMeet
+providerId: viewsmeet-com
+generated: '2026-09-19'
+method: searched
+source: https://viewsmeet.com/pricing.md
+created: '2026-09-19'
+modified: '2026-09-19'
+tags: [Free, Agent-native, Social, Games]
+description: >-
+  ViewsMeet is free with no paid tier. The machine-readable cost statement at /pricing.md (last updated 2026-08-24) says:
+  "ViewsMeet is free to use. There is no checkout, paid tier, subscription, wallet address, payment token, or purchase
+  API today. Current revenue is $0." The daily round, quizzes, profile, public data, Agent Skill, A2A interface, MCP
+  server and participation API are all available without an account or payment, subject to published safety and rate
+  limits. A proposed $5 USD one-time "founding support" option is an aggregate, non-binding interest signal only — it
+  is not for sale, takes no payment and creates no entitlement (Terms). /pricing (HTML) is 404; pricing.md is the page.
+plan_count: 1
+sources:
+- https://viewsmeet.com/pricing.md
+- https://viewsmeet.com/support
+- https://viewsmeet.com/terms
+plans:
+- id: viewsmeet-free
+  name: Free
+  type: free
+  price: 0
+  currency: USD
+  billing_period: none
+  description: Every human and machine surface, no account, no API key, no checkout.
+  included:
+  - Daily pick-and-predict round, Quick 5 / Know Me 24 quizzes, 21-choice profile, private friend comparisons
+  - Public methodology, thresholded country and Atlas data, ledger verification
+  - OpenAPI 3.1 REST participation API, MCP server, A2A interface, Agent Skill, ARD catalog
+  limits:
+  - 30 requests per 60-second window per operation-specific abuse key (rate-limits/viewsmeet-com-rate-limits.yml)
+  - Group Picks rooms 5-20 questions, 50 responses, 14 days; perception challenges 7 days
+  overage: none — requests over the window return 429 with Retry-After 60
+  entries:
+  - label: All API operations
+    name: api_calls
+    type: metered
+    metric: request
+    limit: 30
+    timeFrame: minute
+    unit: 1
+    price: '0'
+    userMultiplied: false
+proposed:
+- name: Founding support
+  price: 5
+  currency: USD
+  billing_period: one-time
+  status: not-for-sale
+  note: '"The proposed $5 one-time founding option is not currently for sale." Interest button records an aggregate signal only; no payment, pledge or benefit (Terms, Support signal).'

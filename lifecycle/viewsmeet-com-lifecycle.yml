@@ -1,0 +1,49 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://viewsmeet.com/developers#versioning and #limits, https://viewsmeet.com/terms (Availability), https://viewsmeet.com/pricing.md,
+  https://viewsmeet.com/feed.xml, the MCP Registry entry, and openapi/viewsmeet-com-openapi.yml (no deprecated flags).
+versioning:
+  scheme: uri-path
+  current: v1
+  mechanism: >-
+    Stable REST operations live under /api/v1/. The ballot loop (/api/agent/challenges/{id}, /api/agent/ballots) is
+    unversioned in the path but every ballot and challenge carries schemaVersion "1.0"; stored documents (packs,
+    ledger checkpoints, topology editions) carry their own schemaVersion. MCP negotiates its revision natively
+    (2025-06-18 today); A2A declares protocolVersion 1.0 in the agent card. The OpenAPI, agent card, server card,
+    ai-catalog and MCP registry entry all share artifact version 0.5.0.
+  docs: https://viewsmeet.com/developers#versioning
+  statement: >-
+    "Stable REST operations use the /api/v1/ prefix. Schemas carry their own version where a stored document must
+    remain interpretable. Breaking API changes will use a new path version; before removing a published version,
+    ViewsMeet will document the replacement and advertise deprecation and sunset timing in response headers. MCP and
+    A2A versions are negotiated or declared by their native protocols."
+deprecation:
+  policy_url: https://viewsmeet.com/developers#versioning
+  policy: >-
+    Breaking changes ship as a new path version; a published version is removed only after the replacement is
+    documented and deprecation + sunset timing have been advertised in response headers.
+  sunset_header: committed-not-yet-observed
+  deprecation_header: committed-not-yet-observed
+  notes: No operation is marked deprecated in the OpenAPI and no Sunset/Deprecation header has been seen, so the commitment is on record but unexercised.
+sla:
+  url: https://viewsmeet.com/terms
+  public_uptime_target: null
+  statement: '"No promise of continuous availability. The service may be unavailable, rate-limited, changed, or discontinued." (Terms, version 2, effective 2026-08-27)'
+status_page: null
+status_page_note: https://viewsmeet.com/status returns 404; no status page is published.
+support:
+  url: https://viewsmeet.com/support
+  statement: '"Support is self-service-only today. There is no public inbox, ticket account, or promised individual response." (pricing.md, last updated 2026-08-24). hello@viewsmeet.com is published on the press page as an optional contact.'
+change_log: https://viewsmeet.com/feed.xml
+change_log_note: >-
+  No dedicated /changelog page (404). The RSS feed carries dated product and daily-edition items with a WebSub hub;
+  structured recent entries are in changelog/viewsmeet-com-changelog.yml.
+data_lifecycle:
+  daily_editions: One immutable UTC-dated pack per day (editionId, packId, version, sha256 digest); prior editions are checkpointed in the public ledger (/api/v1/ledger) with chained editionHash/previousEditionHash.
+  connection_atlas: Frozen 30-day editions; cells publish only after 20 direct edges from 20 independent lineages.
+  challenges: Ballot challenges are short-lived and nonce-bearing (expiresAt in AgentChallenge); perception challenges expire within 7 days; Group Picks rooms expire within 14 days with at most 50 retained responses.
+  receipts: Ballot receipts are described as "canonical durable" documents retrievable by opaque receiptId.
+launched: '2026-08-24'
+rate_limits: rate-limits/viewsmeet-com-rate-limits.yml
+deprecated_operations: []

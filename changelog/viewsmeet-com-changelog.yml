@@ -1,0 +1,53 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://viewsmeet.com/feed.xml (RSS 2.0 "ViewsMeet updates", lastBuildDate 2026-09-19, WebSub hub), the MCP Registry
+  version history for com.viewsmeet/participate, the updatedAt stamps in /.well-known/ai-catalog.json, and the version
+  stamps on /terms (version 2), /methodology (version 2), /privacy (effective 2026-08-27) and /pricing.md (2026-08-24).
+scheme: >-
+  Date-stamped feed items plus per-document version stamps. Machine artifacts (OpenAPI info.version, agent card, server
+  card, server.json, ai-catalog entries, registry) share a semver 0.5.0; REST paths are versioned /api/v1/. No dedicated
+  changelog page exists (/changelog 404) — the RSS feed is the dated record.
+current_version: 0.5.0
+feed: https://viewsmeet.com/feed.xml
+window: 2026-08-24 (launch) to 2026-09-19
+entries:
+- date: '2026-09-19'
+  kind: recurring
+  title: Today's five reviewed choices — 2026-09-19
+  highlights:
+  - Daily immutable edition (editionId 2026-09-19, pack generated-daily-20260919, sha256 digest published in the feed guid and the /api/v1/agents/daily response).
+  breaking: false
+- date: '2026-08-27'
+  kind: additions
+  title: Test Lab and stateless assessment REST
+  highlights:
+  - Test Lab launched with IPIP-50, IPIP-IPC 32 and 36QB6 instruments plus reaction-time and Stroop browser tasks (six feed items 18:55-19:00Z).
+  - ai-catalog entry urn:air:viewsmeet.com:rest:assessments updatedAt 2026-08-27T19:00Z — the /api/v1/assessments operations (listStatelessAssessments, getStatelessAssessmentInstrument, getStatelessAssessmentMethodology, scoreStatelessAssessmentResponses) date from this release.
+  - Question-game guide, 100 would-you-rather and 60 icebreaker resource pages published.
+  - Terms version 2, Methodology version 2 and the privacy notice all carry an Aug 27, 2026 effective date.
+  breaking: false
+- date: '2026-08-26'
+  kind: additions
+  title: Best-friend and couples quiz guides
+  highlights: [Two new human-facing guide pages.]
+  breaking: false
+- date: '2026-08-25'
+  kind: additions
+  title: Group Picks REST and research notes
+  highlights:
+  - ai-catalog entry urn:air:viewsmeet.com:rest:group-picks updatedAt 2026-08-25T01:54Z — the eight /api/v1/experiments operations.
+  - Five source-linked research notes published under /research (feed items 15:26-15:30Z).
+  breaking: false
+- date: '2026-08-24'
+  kind: launch
+  title: ViewsMeet launch — MCP, A2A, REST, OpenAPI, Agent Skill, ARD
+  highlights:
+  - Public launch (press kit "Launch date August 24, 2026").
+  - MCP server com.viewsmeet/participate published to the official MCP Registry five times the same day (0.1.0 09:11Z, 0.2.0 10:41Z, 0.3.0 20:01Z, 0.4.0 21:32Z, 0.5.0 22:44Z); registry descriptions grew from "read curated question sets, cast enum-only ballots" to the Atlas/quiz/Mini-IPIP scope.
+  - ai-catalog entries for the MCP server card, A2A card and Agent Skill stamped 2026-08-24T23:30Z.
+  - pricing.md last updated 2026-08-24 — free, $0 revenue, proposed $5 founding signal.
+  breaking: false
+notes:
+- The feed's daily item repeats every UTC day; only product and content additions are listed above beyond the latest daily edition.
+- No breaking change has been published; the developer guide commits future breaking changes to a new path version with advertised deprecation and sunset headers (lifecycle/viewsmeet-com-lifecycle.yml).

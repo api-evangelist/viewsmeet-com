@@ -1,0 +1,142 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://viewsmeet.com/developers (quickstart, group-picks, assessments, mcp, a2a, limits, versioning, evidence sections),
+  https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md, https://viewsmeet.com/terms, and
+  openapi/viewsmeet-com-openapi.yml; response headers observed live on 2026-09-19.
+description: >-
+  Cross-cutting runtime semantics of ViewsMeet's machine participation API — an anonymous, capability-based,
+  enum-only REST surface with server-issued nonces, published rate-limit headers, immutable dated editions and
+  explicit hard-delete controls. MCP and A2A share the same rules.
+
+base_url: https://viewsmeet.com
+api_style: REST over HTTPS, JSON requests and responses; JSON-RPC 2.0 for /mcp and /api/agent/a2a
+
+authentication:
+  scheme: none (anonymous); optional P-256 signing headers and operator-supplied capability codes add evidence, not access
+  detail: authentication/viewsmeet-com-authentication.yml
+  docs: https://viewsmeet.com/developers#evidence
+
+idempotency:
+  supported: true
+  coverage: partial
+  scope: [submitAgentBallot, confirmStableKeyRegistration, submitGroupPicksResponse, submitPersonalityPerception]
+  mechanism: >-
+    Server-issued replay protection, not a client Idempotency-Key header. Each ballot challenge carries a one-use
+    nonce; "a consumed nonce cannot be replayed with different answers" and a repeat returns 409 "Nonce already used
+    or challenge closed". Stable-key registration challenges are one-use (409 on reuse). Group Picks responses are
+    deduplicated per room by the fresh participant key (409 "Duplicate participant"). Perception submissions are
+    one per participant key per challenge (409 "Challenge expired, consumed, or conflicting").
+  not_covered: >-
+    createPersonalityPerceptionChallenge, createGroupPicksExperiment, branchGroupPicksExperiment,
+    reportPersonalityPerceptionChallenge, issueDailyAgentChallenge and requestStableKeyRegistration have no replay key;
+    a retried POST creates a second resource. Scoring POSTs are stateless and safe to repeat.
+  retention: For the life of the challenge (short-lived nonce expiry; 7-day perception; 14-day room).
+  docs: https://viewsmeet.com/developers#quickstart
+
+dry_run_mode:
+  available: partial
+  mechanism: >-
+    GET /api/v1/agents/daily (getDailyAgentQuestionSet) reads today's pack and the exact POST instructions "without
+    creating state" — documented as "Safe for crawlers, previews, and retries." The state-creating POST on the same
+    URL is separate and explicit. The three assessment scorers and the Mini-IPIP scorer are stateless by contract
+    (private, no-store), so they can be rehearsed freely. There is no dry-run flag on the mutating operations.
+  docs: https://viewsmeet.com/developers#quickstart
+
+reversibility:
+  summary: >-
+    Every private-data write surface has a hard-delete reversal with a stated window; the public ballot has none by
+    design (a receipt is durable and provenance is server-assigned).
+  surfaces:
+  - write: submitAgentBallot (POST /api/agent/ballots)
+    reversal: none
+    grade: none
+    note: A ballot consumes its nonce and yields a durable receipt (getAgentBallotReceipt). No delete or retract operation exists; the skill says "Do not retry a consumed nonce with different answers."
+  - write: submitPersonalityPerception (POST /api/v1/personality/challenges/{code}/perceptions)
+    reversal: deletePersonalityPerceptionResult (DELETE /api/v1/personality/perceptions/{token})
+    window: 'Within the life of the challenge — "Personality perception links keep only factor-level sums and expire within seven days" (Terms); the perception path retains "only five sums for up to seven days" (developer guide).'
+    grade: verified
+    docs: https://viewsmeet.com/terms
+  - write: createPersonalityPerceptionChallenge (POST /api/v1/personality/challenges)
+    reversal: deletePersonalityPerceptionChallenge (DELETE /api/v1/personality/manage/{token}) — "Hard-delete the challenge and cascade every aggregate response"
+    window: 'Any time before the seven-day expiry, after which the challenge and its responses are hard-deleted automatically (privacy notice: "They expire no later than seven days after creation and are hard-deleted with their responses and safety reports; a creator or response capability can delete active data sooner.")'
+    grade: verified
+    docs: https://viewsmeet.com/privacy
+  - write: submitGroupPicksResponse (POST /api/v1/experiments/{code}/responses)
+    reversal: deleteGroupPicksResponse (DELETE /api/v1/experiments/responses/{token}) — "Hard-delete one Group Picks response and recompute future aggregates"
+    window: 'Within the 14-day room lifetime ("Group Picks rooms expire within 14 days, accept at most 50 retained responses" — Terms; lifecycle.expiresAfterDays 14 in the live question-bank response). Already-published historical aggregates are not rewritten.'
+    grade: verified
+    docs: https://viewsmeet.com/terms
+  - write: createGroupPicksExperiment / branchGroupPicksExperiment (POST /api/v1/experiments, POST /api/v1/experiments/{code}/branches)
+    reversal: deleteGroupPicksExperiment (DELETE /api/v1/experiments/manage/{token}) — "Hard-delete one Group Picks room and all retained responses"
+    window: Within the 14-day room lifetime.
+    grade: verified
+    docs: https://viewsmeet.com/developers#group-picks
+  - write: confirmStableKeyRegistration (POST /api/v1/agents/registrations)
+    reversal: none documented
+    grade: none
+  - write: create_friendship_score_relay (MCP only)
+    reversal: 'Deleting the underlying response "invalidate[s] relays made from it" (privacy notice, Your controls); relays expire with their seven-day link.'
+    grade: documented
+    docs: https://viewsmeet.com/privacy
+
+pagination:
+  style: none
+  description: >-
+    No list endpoint pages. Collections are fixed-size documents — the 100-question bank, the 3-instrument assessment
+    catalog, a topology edition of at most 144 cells, a ledger of dated checkpoints — returned whole.
+
+field_expansion:
+  supported: false
+
+metadata:
+  supported: false
+  note: Ballots and responses reject any field outside the strict schema (additionalProperties false); free text, URLs, callbacks and caller-selected provenance are rejected by contract.
+
+request_tracing:
+  request_id_header: x-request-id
+  description: Observed on every /api/v1/* response (Cloudflare ray-id shaped, e.g. a3dc7bf59edfbdee); not documented as a support handle.
+
+versioning:
+  scheme: uri-path (/api/v1/) plus schemaVersion fields in stored documents; artifact version 0.5.0 across OpenAPI, agent card, server card and registry
+  detail: lifecycle/viewsmeet-com-lifecycle.yml
+  changelog: changelog/viewsmeet-com-changelog.yml
+  docs: https://viewsmeet.com/developers#versioning
+
+error_envelope:
+  media_type: application/json
+  rfc9457: false
+  shape: '{ "error": string, "message": string, "issues"?: [ { "path", "code", "message" } ] }  (router 404s: { "error": { "code", "message" } })'
+  detail: errors/viewsmeet-com-problem-types.yml
+
+rate_limits:
+  signal_status: 429
+  headers: [RateLimit-Policy, RateLimit, Retry-After]
+  policy: '"minute";q=30;w=60 — 30 requests per 60-second window per operation-specific abuse key; 429 carries Retry-After: 60'
+  detail: rate-limits/viewsmeet-com-rate-limits.yml
+  docs: https://viewsmeet.com/developers#limits
+
+caching:
+  public_documents: 'Cache-Control public with max-age from 30 s (world) to 86400 s (question bank, immutable; assessments) and stale-while-revalidate; the guide says to revalidate per cache headers.'
+  scoring_responses: 'private, no-store (assessment and Mini-IPIP scorers)'
+  mcp: no-store
+  cors: 'access-control-allow-origin: * on public documents, the agent card and the MCP endpoint'
+
+integrity:
+  packs: Every daily pack carries a sha256 digest and edition id; ballots must echo packId + packVersion; receipts carry ballotHash.
+  ledger: /api/v1/ledger chains editionHash -> previousEditionHash so a published checkpoint cannot be quietly changed.
+  topology: Each frozen Connection Atlas edition carries editionHash and previousEditionHash.
+
+webhooks:
+  supported: false
+  note: No outbound webhooks or push notifications (A2A capabilities.pushNotifications false; "ViewsMeet never posts, messages, or creates one automatically"). The RSS feed at /feed.xml advertises a WebSub hub (pubsubhubbub.appspot.com) for the daily-edition items.
+
+other_conventions:
+- name: Enum-only inputs
+  detail: Choice vectors are arrays of "a" | "b"; assessment responses are 1-5 (Mini-IPIP) or 0-5 (36QB6) integers keyed by itemId; every schema sets additionalProperties false.
+- name: Capabilities in the path
+  detail: '{code} grants read/submit on a private challenge or room; {token} grants management or deletion. They are secrets and expire with the resource.'
+- name: Thresholded outputs
+  detail: Group Picks counts are suppressed below three retained responses; country cells below three; Atlas cells below 20 direct edges from 20 lineages. Clients must not infer suppressed counts (Terms, Machine use).
+- name: Provenance is server-assigned
+  detail: Transport (browser / MCP / A2A / REST) and credential evidence (stable key, verified domain) determine the cohort label; the caller cannot set it.

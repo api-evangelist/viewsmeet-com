@@ -1,0 +1,124 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  Derived by binding the LIVE tools/list result from https://viewsmeet.com/mcp (14 tools, anonymous, saved to
+  mcp/viewsmeet-com-tools-list.json) and the A2A card's one skill to the operationIds in openapi/viewsmeet-com-openapi.yml
+  (32 operations, fetched from https://viewsmeet.com/openapi.json). Nothing here is gated, so every binding was
+  checked field-by-field against both schemas; confidence is high where the MCP inputSchema and the REST requestBody
+  are the same shape.
+purpose: >-
+  ViewsMeet's REST, MCP and A2A surfaces are three overlapping-but-divergent projections of one system: the public
+  ballot loop exists on all three; the Mini-IPIP and perception paths exist on REST and MCP; the private Know Me
+  (friendship) quiz, cohort results, methodology sections and score relays are MCP-only; Group Picks rooms, the
+  three stateless assessments, stable-key registration and every DELETE are REST-only. No surface is a superset.
+surfaces:
+  rest_openapi: openapi/viewsmeet-com-openapi.yml     # 32 operations, 24 schemas, servers[] https://viewsmeet.com, no securitySchemes
+  mcp: https://viewsmeet.com/mcp                       # tools/list OPEN (anonymous 200); 14 tools with inputSchema + outputSchema + annotations
+  a2a: https://viewsmeet.com/api/agent/a2a             # JSON-RPC; one skill; hands off to REST submitUrl/receiptTemplate
+  graphql: null
+
+crosswalk:
+- tool: get_daily_question_set
+  category: ballot
+  rest: [getDailyAgentQuestionSet]
+  binding: rest
+  confidence: high
+  note: Both are the state-free read of today's reviewed pack (GET /api/v1/agents/daily).
+- tool: request_ballot_challenge
+  category: ballot
+  rest: [issueDailyAgentChallenge, getAgentChallenge]
+  binding: rest
+  confidence: medium
+  note: >-
+    REST issues today's daily challenge with an empty POST (packId/mode/target are implied by the edition); the MCP
+    tool takes packId, mode and target explicitly, so it is a wider surface than the REST operation it maps to.
+    getAgentChallenge is the REST read of an issued challenge by id.
+- tool: cast_ballot
+  category: ballot
+  rest: [submitAgentBallot]
+  binding: rest
+  confidence: high
+  note: Identical AgentBallot shape — schemaVersion, challengeId, packId, packVersion, nonce, selfChoices, predictionChoices.
+- tool: get_ballot_receipt
+  category: ballot
+  rest: [getAgentBallotReceipt]
+  binding: rest
+  confidence: high
+- tool: get_connection_topology
+  category: public-data
+  rest: [getConnectionTopology]
+  binding: rest
+  confidence: high
+  note: The spec says the REST operation "returns the same category-only DTO as the read-only MCP get_connection_topology tool".
+- tool: get_personality_instrument
+  category: personality
+  rest: [getMiniIpipPersonalityInstrument]
+  binding: rest
+  confidence: high
+- tool: score_personality_responses
+  category: personality
+  rest: [scoreMiniIpipPersonalityResponses]
+  binding: rest
+  confidence: high
+  note: REST body field is `answers`; MCP argument is `responses`. Same 20-entry {itemId, response} vector.
+- tool: get_personality_perception_challenge
+  category: perception
+  rest: [getPersonalityPerceptionChallenge]
+  binding: rest
+  confidence: high
+- tool: submit_personality_perception
+  category: perception
+  rest: [submitPersonalityPerception]
+  binding: rest
+  confidence: high
+  note: REST body field is `predictions`; MCP argument is `responses`. Both require participantKey; REST also accepts an optional alias.
+
+a2a_crosswalk:
+- skill: curated-either-or-participation
+  action: get_daily_question_set
+  rest: [issueDailyAgentChallenge, submitAgentBallot, getAgentBallotReceipt]
+  binding: a2a-then-rest
+  confidence: high
+  note: >-
+    The A2A task issues the challenge; its completed artifact returns submitUrl and receiptTemplate, and the
+    developer guide states ballot submission and receipt retrieval happen through those REST URLs, not A2A.
+
+mcp_only:
+- tool: get_cohort_results
+  reason: >-
+    No REST operation in the OpenAPI takes a questionSetId + cohort + window. A live public read exists at
+    /api/v1/experiment/world (country-level, undocumented in the spec), but it is a different shape.
+- tool: get_methodology
+  reason: >-
+    Returns one site methodology section from a fixed enum. REST exposes only instrument-specific methodology
+    (getMiniIpipMethodology, getStatelessAssessmentMethodology), not the general sections.
+- tool: get_friendship_challenge
+  reason: The private 24-question Know Me quiz is a web + MCP surface; the OpenAPI carries no /c/<code> operations.
+- tool: submit_friendship_prediction
+  reason: As above — no REST operation accepts a 24-prediction Know Me vector.
+- tool: create_friendship_score_relay
+  reason: Score relays are created from a Know Me response token; no REST operation exists.
+
+rest_only:
+- capability: stateless assessments (IPIP-50, IPIP-IPC 32, 36QB6)
+  operations: [listStatelessAssessments, getStatelessAssessmentInstrument, getStatelessAssessmentMethodology, scoreStatelessAssessmentResponses]
+- capability: Mini-IPIP methodology
+  operations: [getMiniIpipMethodology]
+- capability: personality perception challenge lifecycle (create, rehydrate, manage, delete, report)
+  operations: [createPersonalityPerceptionChallenge, getPersonalityPerceptionResult, deletePersonalityPerceptionResult, getPersonalityPerceptionManagement, deletePersonalityPerceptionChallenge, reportPersonalityPerceptionChallenge]
+- capability: Group Picks rooms
+  operations: [getGroupPicksQuestionBank, createGroupPicksExperiment, getGroupPicksExperiment, branchGroupPicksExperiment, submitGroupPicksResponse, deleteGroupPicksResponse, getGroupPicksManagement, deleteGroupPicksExperiment]
+- capability: stable P-256 signing-key registration
+  operations: [requestStableKeyRegistration, confirmStableKeyRegistration]
+- capability: MCP transport itself, documented as a REST path
+  operations: [callViewsMeetMcp]
+
+coverage:
+  mcp_tools: 14
+  mcp_tools_bound_to_rest: 9
+  mcp_only: 5
+  a2a_skills: 1
+  a2a_skills_bound_to_rest: 1
+  rest_operations: 32
+  rest_operations_with_a_tool: 11
+  rest_only: 21

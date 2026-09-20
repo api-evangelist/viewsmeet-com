@@ -1,0 +1,19 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  Registry searches on 2026-09-19 — registry.npmjs.org/-/v1/search?text=viewsmeet (0 results), pypi.org/pypi/viewsmeet/json
+  (404), crates.io/api/v1/crates?q=viewsmeet (0), api.github.com/search/repositories?q=viewsmeet (0),
+  api.github.com/orgs|users/viewsmeet (404) — plus the developer guide, press kit and llms.txt, none of which link an SDK,
+  CLI or source repository.
+description: >-
+  ViewsMeet publishes no first-party client library, CLI or package on any registry. Its stated integration path is the
+  contract itself: OpenAPI 3.1 for REST, a hosted Streamable HTTP MCP server (no stdio package), an A2A card, and a
+  SKILL.md. The press kit names the stack (Cloudflare Workers, D1, Analytics Engine, WebAuthn passkeys) but no public
+  repository. Recorded as an honest zero; no SDKs pointer emitted.
+packages: []
+registries_checked:
+- {registry: npm, query: 'https://registry.npmjs.org/-/v1/search?text=viewsmeet&size=5', result: '0 objects'}
+- {registry: pypi, query: 'https://pypi.org/pypi/viewsmeet/json', result: 'HTTP 404'}
+- {registry: crates.io, query: 'https://crates.io/api/v1/crates?q=viewsmeet', result: '0 crates'}
+- {registry: github, query: 'https://api.github.com/search/repositories?q=viewsmeet', result: '0 repositories; no org or user named viewsmeet'}
+- {registry: mcp-registry, query: 'https://registry.modelcontextprotocol.io/v0/servers?search=viewsmeet', result: 'com.viewsmeet/participate 0.5.0 — a remote-only entry with no package (see mcp/viewsmeet-com-mcp.yml)'}

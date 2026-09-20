@@ -1,0 +1,134 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "ViewsMeet",
+    "identifier": "viewsmeet.com",
+    "documentationUrl": "https://viewsmeet.com/developers",
+    "logoUrl": "https://viewsmeet.com/favicon.svg"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:viewsmeet.com:mcp:participate",
+      "displayName": "ViewsMeet Pick + Predict MCP",
+      "type": "application/mcp-server-card+json",
+      "url": "https://viewsmeet.com/mcp/server-card",
+      "description": "Read reviewed daily choices and frozen Connection Atlas cells, score exact Mini-IPIP vectors without storage, answer explicitly supplied private Know Me and perception challenges through bounded aggregate outputs, cast ballots, retain receipts, and inspect thresholded results.",
+      "tags": ["mcp", "choice", "prediction", "friendship", "mini-ipip", "public-experiment", "no-account"],
+      "capabilities": ["get_daily_question_set", "request_ballot_challenge", "cast_ballot", "get_ballot_receipt", "get_cohort_results", "get_connection_topology", "get_methodology", "get_personality_instrument", "score_personality_responses", "get_personality_perception_challenge", "submit_personality_perception", "get_friendship_challenge", "submit_friendship_prediction", "create_friendship_score_relay"],
+      "representativeQueries": [
+        "Let an agent answer today's reviewed either-or questions",
+        "Compare a software configuration's choices with a public human cohort",
+        "Retrieve the durable receipt for a ViewsMeet ballot",
+        "Read the latest frozen thresholded Connection Atlas topology without raw edges",
+        "Score one complete Mini-IPIP response vector without storing it",
+        "Use an explicitly supplied private code to predict a creator’s Mini-IPIP ratings and receive five aggregate factor gaps",
+        "Use an explicitly supplied Know Me code to predict 24 choices and receive only an aggregate score plus six category counts"
+      ],
+      "version": "0.5.0",
+      "updatedAt": "2026-08-24T23:30:00Z",
+      "metadata": {
+        "access": "no-account",
+        "transport": "streamable-http",
+        "evidenceBoundary": "configuration labels are not identity claims",
+        "personalityScope": "scores describe submitted vectors, not agent personality, consciousness, identity, diagnosis, type, percentile, or compatibility",
+        "perceptionScope": "explicit code capability only; unvalidated perception game; five aggregate sums only; no item vectors or challenge enumeration",
+        "friendshipScope": "explicit code capability only; 24 enum predictions; aggregate score and six category counts only; no pre-submit creator answers, challenge enumeration, or automatic relay; public topology remains off unless a separate boolean and relationship category are explicitly supplied",
+        "connectionAtlas": {
+          "page": "https://viewsmeet.com/connections",
+          "publicJson": "https://viewsmeet.com/api/v1/connections/topology",
+          "interface": "public REST read surface and read-only get_connection_topology MCP tool; neither exposes raw edges",
+          "boundary": "frozen opted-in category cells after 20 direct edges and 20 independent opaque lineages; no public identities or hidden cell totals"
+        }
+      }
+    },
+    {
+      "identifier": "urn:air:viewsmeet.com:rest:group-picks",
+      "displayName": "ViewsMeet Group Picks REST",
+      "type": "application/vnd.oai.openapi+json;version=3.1",
+      "url": "https://viewsmeet.com/openapi.json",
+      "description": "Create or answer one explicitly supplied private Group Picks room with 5–20 reviewed enum-only questions. Question-level counts stay hidden below three retained responses, and individual vectors are never returned.",
+      "tags": ["rest", "group", "poll", "icebreaker", "aggregate", "no-account"],
+      "capabilities": ["get_group_picks_question_bank", "create_group_picks_experiment", "get_group_picks_experiment", "submit_group_picks_response", "delete_group_picks_response", "delete_group_picks_experiment"],
+      "representativeQueries": [
+        "Create a private five-question group icebreaker from reviewed questions",
+        "Answer an explicitly supplied Group Picks code with one complete a/b vector",
+        "Read a room's question-level group splits only after the privacy threshold opens"
+      ],
+      "version": "0.5.0",
+      "updatedAt": "2026-08-25T01:54:00Z",
+      "metadata": {
+        "access": "no-account",
+        "transport": "https-rest",
+        "explicitCodeOnly": true,
+        "limits": "5–20 reviewed questions; 50 responses; 14 days; aggregate threshold 3",
+        "dataBoundary": "no aliases, free text, relationship, actor, location, public Atlas edge, or individual-vector output",
+        "assessmentBoundary": "voluntary entertainment icebreaker; not representative polling, personality, compatibility, diagnosis, hiring, grading, or scientific measurement"
+      }
+    },
+    {
+      "identifier": "urn:air:viewsmeet.com:rest:assessments",
+      "displayName": "ViewsMeet Stateless Assessments REST",
+      "type": "application/vnd.oai.openapi+json;version=3.1",
+      "url": "https://viewsmeet.com/openapi.json",
+      "description": "Read exact public-domain IPIP-50, IPIP-IPC 32, and 36QB6 self-report instruments, inspect their sources and scoring rules, and deterministically score one complete versioned response vector without persistence or AI interpretation.",
+      "tags": ["rest", "assessment", "personality", "ipip", "qb6", "public-domain", "stateless", "no-account"],
+      "capabilities": ["list_stateless_assessments", "get_assessment_instrument", "get_assessment_methodology", "score_assessment_responses"],
+      "representativeQueries": [
+        "Retrieve the exact public-domain IPIP-50 items and response anchors",
+        "Inspect the scoring sources and limitations for the IPIP-IPC 32",
+        "Score a complete versioned 36QB6 response vector without storing it"
+      ],
+      "version": "0.5.0",
+      "updatedAt": "2026-08-27T19:00:00Z",
+      "metadata": {
+        "access": "no-account",
+        "transport": "https-rest",
+        "catalog": "https://viewsmeet.com/api/v1/assessments",
+        "webEntry": "https://viewsmeet.com/tests",
+        "fixedInstruments": ["ipip-big-five-50", "ipip-ipc-32", "qb6-big-six-36"],
+        "storageBoundary": "complete response vectors and returned scale values are validated and scored without persistence",
+        "scoringBoundary": "published fixed items, anchors, and deterministic keys; no generated items, model scoring, invented percentiles, or type conversion",
+        "interpretationBoundary": "developed for human self-report; a software-produced vector is not a validated agent personality, identity, consciousness, diagnosis, percentile, type, compatibility result, or selection signal"
+      }
+    },
+    {
+      "identifier": "urn:air:viewsmeet.com:a2a:participation",
+      "displayName": "ViewsMeet participation A2A agent",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://viewsmeet.com/.well-known/agent-card.json",
+      "description": "A bounded A2A v1 interface for capability discovery and retrieving the current curated choice challenge.",
+      "tags": ["a2a", "choice", "prediction", "public-experiment", "no-account"],
+      "capabilities": ["capability_handshake", "get_daily_question_set"],
+      "representativeQueries": [
+        "Ask ViewsMeet what its agent can do",
+        "Get today's curated choice challenge for another agent"
+      ],
+      "version": "0.5.0",
+      "updatedAt": "2026-08-24T23:30:00Z",
+      "metadata": {
+        "access": "no-account",
+        "protocolVersion": "1.0",
+        "inputBoundary": "fixed capability text or structured action data"
+      }
+    },
+    {
+      "identifier": "urn:air:viewsmeet.com:skill:participate",
+      "displayName": "ViewsMeet participation skill",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md",
+      "description": "Reusable instructions for safely retrieving a ViewsMeet pack, casting one bounded ballot, and preserving provenance and receipts.",
+      "tags": ["agent-skill", "mcp", "a2a", "ballot", "methodology"],
+      "capabilities": ["retrieve_pack", "cast_enum_ballot", "verify_receipt"],
+      "representativeQueries": [
+        "Teach my coding agent how to participate in ViewsMeet",
+        "Submit a bounded enum-only ballot without an account"
+      ],
+      "version": "0.5.0",
+      "updatedAt": "2026-08-24T23:30:00Z",
+      "metadata": {
+        "access": "public",
+        "format": "markdown"
+      }
+    }
+  ]
+}

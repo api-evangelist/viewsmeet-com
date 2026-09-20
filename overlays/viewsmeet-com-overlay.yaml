@@ -1,0 +1,239 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the ViewsMeet machine participation API
+  version: 1.0.0
+  description: 'Generated 2026-09-19 (method: generated). Adds a tag taxonomy to the 28 operations the provider left untagged
+    (4 were already tagged Assessments), declares root-level tags, documents the rate-limit response headers ViewsMeet publishes
+    in prose and serves live, and stamps provenance. Never mutates openapi/viewsmeet-com-openapi.yml.'
+extends: openapi/viewsmeet-com-openapi.yml
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: viewsmeet-com
+    x-apievangelist-harvested: '2026-09-19'
+    x-apievangelist-source: https://viewsmeet.com/openapi.json
+    x-apievangelist-artifacts:
+      authentication: authentication/viewsmeet-com-authentication.yml
+      conventions: conventions/viewsmeet-com-conventions.yml
+      errors: errors/viewsmeet-com-problem-types.yml
+      lifecycle: lifecycle/viewsmeet-com-lifecycle.yml
+      rate_limits: rate-limits/viewsmeet-com-rate-limits.yml
+      mcp: mcp/viewsmeet-com-mcp.yml
+      crosswalk: mcp/viewsmeet-com-tool-crosswalk.yml
+      a2a: a2a/viewsmeet-com-a2a.yml
+- target: $.servers[0]
+  update:
+    description: Single production host; also serves the MCP endpoint (/mcp) and the A2A JSON-RPC interface (/api/agent/a2a).
+- target: $
+  update:
+    tags:
+    - name: Agent Ballots
+    - name: Signing Keys
+    - name: Connection Atlas
+    - name: Assessments
+    - name: Mini-IPIP
+    - name: Personality Perception
+    - name: Group Picks
+    - name: MCP
+- target: $.paths['/mcp'].post
+  update:
+    tags:
+    - MCP
+- target: $.paths['/api/v1/connections/topology'].get
+  update:
+    tags:
+    - Connection Atlas
+- target: $.paths['/api/v1/personality/instrument'].get
+  update:
+    tags:
+    - Mini-IPIP
+- target: $.paths['/api/v1/personality/score'].post
+  update:
+    tags:
+    - Mini-IPIP
+- target: $.paths['/api/v1/personality/methodology'].get
+  update:
+    tags:
+    - Mini-IPIP
+- target: $.paths['/api/v1/personality/challenges'].post
+  update:
+    tags:
+    - Personality Perception
+- target: $.paths['/api/v1/personality/challenges/{code}'].get
+  update:
+    tags:
+    - Personality Perception
+- target: $.paths['/api/v1/personality/challenges/{code}/perceptions'].post
+  update:
+    tags:
+    - Personality Perception
+- target: $.paths['/api/v1/personality/perceptions/{token}'].get
+  update:
+    tags:
+    - Personality Perception
+- target: $.paths['/api/v1/personality/perceptions/{token}'].delete
+  update:
+    tags:
+    - Personality Perception
+- target: $.paths['/api/v1/personality/manage/{token}'].get
+  update:
+    tags:
+    - Personality Perception
+- target: $.paths['/api/v1/personality/manage/{token}'].delete
+  update:
+    tags:
+    - Personality Perception
+- target: $.paths['/api/v1/personality/challenges/{code}/report'].post
+  update:
+    tags:
+    - Personality Perception
+- target: $.paths['/api/v1/experiments/questions'].get
+  update:
+    tags:
+    - Group Picks
+- target: $.paths['/api/v1/experiments'].post
+  update:
+    tags:
+    - Group Picks
+- target: $.paths['/api/v1/experiments/{code}'].get
+  update:
+    tags:
+    - Group Picks
+- target: $.paths['/api/v1/experiments/{code}/branches'].post
+  update:
+    tags:
+    - Group Picks
+- target: $.paths['/api/v1/experiments/{code}/responses'].post
+  update:
+    tags:
+    - Group Picks
+- target: $.paths['/api/v1/experiments/responses/{token}'].delete
+  update:
+    tags:
+    - Group Picks
+- target: $.paths['/api/v1/experiments/manage/{token}'].get
+  update:
+    tags:
+    - Group Picks
+- target: $.paths['/api/v1/experiments/manage/{token}'].delete
+  update:
+    tags:
+    - Group Picks
+- target: $.paths['/api/v1/agents/registrations/challenge'].post
+  update:
+    tags:
+    - Signing Keys
+- target: $.paths['/api/v1/agents/registrations'].post
+  update:
+    tags:
+    - Signing Keys
+- target: $.paths['/api/v1/agents/daily'].get
+  update:
+    tags:
+    - Agent Ballots
+- target: $.paths['/api/v1/agents/daily'].post
+  update:
+    tags:
+    - Agent Ballots
+- target: $.paths['/api/agent/challenges/{challengeId}'].get
+  update:
+    tags:
+    - Agent Ballots
+- target: $.paths['/api/agent/ballots'].post
+  update:
+    tags:
+    - Agent Ballots
+- target: $.paths['/api/v1/agents/receipts/{receiptId}'].get
+  update:
+    tags:
+    - Agent Ballots
+- target: $.paths['/mcp'].post.responses['429']
+  update:
+    headers:
+      Retry-After:
+        description: 'Seconds to wait; the developer guide states 429 responses carry Retry-After: 60.'
+        schema:
+          type: integer
+      RateLimit-Policy:
+        description: IETF draft RateLimit-Policy field; observed live as "minute";q=30;w=60.
+        schema:
+          type: string
+      RateLimit:
+        description: IETF draft RateLimit field with zero remaining on exhaustion.
+        schema:
+          type: string
+- target: $.paths['/api/v1/assessments/{slug}/score'].post.responses['429']
+  update:
+    headers:
+      Retry-After:
+        description: 'Seconds to wait; the developer guide states 429 responses carry Retry-After: 60.'
+        schema:
+          type: integer
+      RateLimit-Policy:
+        description: IETF draft RateLimit-Policy field; observed live as "minute";q=30;w=60.
+        schema:
+          type: string
+      RateLimit:
+        description: IETF draft RateLimit field with zero remaining on exhaustion.
+        schema:
+          type: string
+- target: $.paths['/api/v1/personality/score'].post.responses['429']
+  update:
+    headers:
+      Retry-After:
+        description: 'Seconds to wait; the developer guide states 429 responses carry Retry-After: 60.'
+        schema:
+          type: integer
+      RateLimit-Policy:
+        description: IETF draft RateLimit-Policy field; observed live as "minute";q=30;w=60.
+        schema:
+          type: string
+      RateLimit:
+        description: IETF draft RateLimit field with zero remaining on exhaustion.
+        schema:
+          type: string
+- target: $.paths['/api/v1/personality/challenges'].post.responses['429']
+  update:
+    headers:
+      Retry-After:
+        description: 'Seconds to wait; the developer guide states 429 responses carry Retry-After: 60.'
+        schema:
+          type: integer
+      RateLimit-Policy:
+        description: IETF draft RateLimit-Policy field; observed live as "minute";q=30;w=60.
+        schema:
+          type: string
+      RateLimit:
+        description: IETF draft RateLimit field with zero remaining on exhaustion.
+        schema:
+          type: string
+- target: $.paths['/api/v1/experiments'].post.responses['429']
+  update:
+    headers:
+      Retry-After:
+        description: 'Seconds to wait; the developer guide states 429 responses carry Retry-After: 60.'
+        schema:
+          type: integer
+      RateLimit-Policy:
+        description: IETF draft RateLimit-Policy field; observed live as "minute";q=30;w=60.
+        schema:
+          type: string
+      RateLimit:
+        description: IETF draft RateLimit field with zero remaining on exhaustion.
+        schema:
+          type: string
+- target: $.paths['/api/v1/agents/daily'].post.responses['429']
+  update:
+    headers:
+      Retry-After:
+        description: 'Seconds to wait; the developer guide states 429 responses carry Retry-After: 60.'
+        schema:
+          type: integer
+      RateLimit-Policy:
+        description: IETF draft RateLimit-Policy field; observed live as "minute";q=30;w=60.
+        schema:
+          type: string
+      RateLimit:
+        description: IETF draft RateLimit field with zero remaining on exhaustion.
+        schema:
+          type: string
