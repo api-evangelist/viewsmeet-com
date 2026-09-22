@@ -21,6 +21,18 @@ tags:
 - Games
 - Personality Assessment
 - Surveys & Polls
+- agent-native
+- MCP
+- A2A
+- Research
+- Psychology
+- Consumer
+- Cloudflare Workers
+tags_raw:
+- Social
+- Games
+- Personality Assessment
+- Surveys & Polls
 - Agent-native
 - MCP
 - A2A
@@ -41,6 +53,11 @@ apis:
   humanURL: https://viewsmeet.com/developers
   baseURL: https://viewsmeet.com
   tags:
+  - agent-native
+  - Surveys & Polls
+  - Personality Assessment
+  - Games
+  tags_raw:
   - Agent-native
   - Surveys & Polls
   - Personality Assessment
@@ -86,6 +103,9 @@ apis:
   baseURL: https://viewsmeet.com/mcp
   tags:
   - MCP
+  - agent-native
+  tags_raw:
+  - MCP
   - Agent-native
   properties:
   - type: MCPServer
@@ -110,6 +130,9 @@ apis:
   humanURL: https://viewsmeet.com/developers#a2a
   baseURL: https://viewsmeet.com/api/agent/a2a
   tags:
+  - A2A
+  - agent-native
+  tags_raw:
   - A2A
   - Agent-native
   properties:
