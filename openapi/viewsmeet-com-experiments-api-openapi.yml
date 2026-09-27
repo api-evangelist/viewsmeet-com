@@ -1,0 +1,227 @@
+openapi: 3.2.0
+info:
+  title: Viewsmeet Com Experiments API
+  version: 0.5.0
+  description: 'Operations tagged Experiments across 2 of this provider''s published API definitions: viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://viewsmeet.com
+tags:
+- name: Experiments
+paths:
+  /api/v1/experiments/questions:
+    get:
+      operationId: getGroupPicksQuestionBank
+      summary: Read the reviewed Group Picks question bank and fixed limits
+      description: Returns 100 reviewed either-or questions. A live room may freeze 5–20 of them, accepts at most 50 responses, expires after 14 days, and suppresses question counts below three retained responses.
+      responses:
+        '200':
+          description: Reviewed question bank and immutable Group Picks limits
+      tags:
+      - Experiments
+    servers:
+    - url: https://viewsmeet.com
+  /api/v1/experiments:
+    post:
+      operationId: createGroupPicksExperiment
+      summary: Create one private aggregate-only Group Picks room
+      description: Stores only ordered reviewed question IDs and capability/lifecycle metadata. No creator alias, audience, relationship, actor, location, or Atlas edge is accepted.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - questionIds
+              properties:
+                questionIds:
+                  type: array
+                  minItems: 5
+                  maxItems: 20
+                  uniqueItems: true
+                  items:
+                    type: string
+                    pattern: ^[a-z0-9-]{5,80}$
+      responses:
+        '201':
+          description: Private room link and management capability
+        '400':
+          description: Invalid reviewed question selection
+        '429':
+          description: Rate limited
+      tags:
+      - Experiments
+    servers:
+    - url: https://viewsmeet.com
+  /api/v1/experiments/{code}:
+    get:
+      operationId: getGroupPicksExperiment
+      summary: Read one explicitly supplied private Group Picks room
+      description: Returns frozen reviewed questions and either a collecting state or question-level counts after three retained responses. Individual vectors are never returned.
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{20,32}$
+      responses:
+        '200':
+          description: Room questions and thresholded aggregate state
+        '404':
+          description: Room invalid or expired
+      tags:
+      - Experiments
+    servers:
+    - url: https://viewsmeet.com
+  /api/v1/experiments/{code}/branches:
+    post:
+      operationId: branchGroupPicksExperiment
+      summary: Create one anonymous child room with the same reviewed questions
+      description: Accepts an empty JSON object and returns a fresh private child room plus management capability. Lineage stores only opaque parent/child room IDs, depth, and lifecycle timestamps—never codes, capabilities, answers, participants, accounts, aliases, IPs, relationships, or actors.
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{20,32}$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              maxProperties: 0
+      responses:
+        '201':
+          description: Fresh same-question child room and private management capability
+        '404':
+          description: Parent room invalid or expired
+        '409':
+          description: Branch depth or parent lifecycle no longer permits a child
+      tags:
+      - Experiments
+    servers:
+    - url: https://viewsmeet.com
+  /api/v1/experiments/{code}/responses:
+    post:
+      operationId: submitGroupPicksResponse
+      summary: Submit one complete enum-only Group Picks response
+      description: Stores one challenge-scoped participant hash, deletion-capability hash, ordered a/b vector, and timestamp. No alias, free text, relationship, actor, location, or public contribution is accepted. Output remains suppressed below three responses.
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{20,32}$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - answers
+              - participantKey
+              properties:
+                participantKey:
+                  type: string
+                  pattern: ^[A-Za-z0-9_-]{16,128}$
+                answers:
+                  type: array
+                  minItems: 5
+                  maxItems: 20
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                    - questionId
+                    - choice
+                    properties:
+                      questionId:
+                        type: string
+                        pattern: ^[a-z0-9-]{5,80}$
+                      choice:
+                        type: string
+                        enum:
+                        - a
+                        - b
+      responses:
+        '201':
+          description: Response deletion capability and current thresholded room state
+        '400':
+          description: Incomplete or invalid response
+        '409':
+          description: Duplicate participant, full, or expired room
+      tags:
+      - Experiments
+    servers:
+    - url: https://viewsmeet.com
+  /api/v1/experiments/responses/{token}:
+    delete:
+      operationId: deleteGroupPicksResponse
+      summary: Hard-delete one Group Picks response and recompute future aggregates
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{20,256}$
+      responses:
+        '204':
+          description: Response deleted
+        '404':
+          description: Capability invalid
+      tags:
+      - Experiments
+    servers:
+    - url: https://viewsmeet.com
+  /api/v1/experiments/manage/{token}:
+    get:
+      operationId: getGroupPicksManagement
+      summary: Read one creator room and its thresholded question-level aggregates
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{20,256}$
+      responses:
+        '200':
+          description: Room metadata and thresholded aggregates only
+        '404':
+          description: Capability invalid or expired
+      tags:
+      - Experiments
+    delete:
+      operationId: deleteGroupPicksExperiment
+      summary: Hard-delete one Group Picks room and all retained responses
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{20,256}$
+      responses:
+        '204':
+          description: Room and responses deleted
+        '404':
+          description: Capability invalid
+      tags:
+      - Experiments
+    servers:
+    - url: https://viewsmeet.com
+externalDocs:
+  description: ViewsMeet participation instructions
+  url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
+x-refined-from:
+- viewsmeet-com-openapi.json
+- viewsmeet-com-openapi.yml

@@ -1,0 +1,41 @@
+openapi: 3.2.0
+info:
+  title: Viewsmeet Com MCP API
+  version: 0.5.0
+  description: 'Operations tagged Mcp across 2 of this provider''s published API definitions: viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://viewsmeet.com
+tags:
+- name: MCP
+paths:
+  /mcp:
+    post:
+      operationId: callViewsMeetMcp
+      summary: Call the fourteen-tool MCP Streamable HTTP remote
+      description: Use native MCP tools/list discovery. The read-only Connection Atlas tool returns only the latest already-frozen public DTO. Exact-code friendship tools enumerate no challenges, withhold creator answers before submission, accept 24 enum-only predictions, and return aggregate score output. Score-relay creation is a separate explicitly authorized call. See the MCP Server Card for transport details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: MCP JSON-RPC 2.0 request; method and params are validated by the MCP protocol adapter.
+      responses:
+        '200':
+          description: MCP JSON-RPC result or bounded tool error
+        '400':
+          description: Malformed JSON-RPC or invalid protocol headers
+        '404':
+          description: Unknown MCP method
+        '429':
+          description: Rate limited
+      tags:
+      - MCP
+    servers:
+    - url: https://viewsmeet.com
+externalDocs:
+  description: ViewsMeet participation instructions
+  url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
+x-refined-from:
+- viewsmeet-com-openapi.json
+- viewsmeet-com-openapi.yml

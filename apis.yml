@@ -21,7 +21,7 @@ tags:
 - Games
 - Personality Assessment
 - Surveys & Polls
-- agent-native
+- Agent-Native
 - MCP
 - A2A
 - Research
@@ -40,34 +40,44 @@ tags_raw:
 - Psychology
 - Consumer
 - Cloudflare Workers
+- agent-native
 apis:
-- aid: viewsmeet-com:viewsmeet-machine-participation-api
-  name: ViewsMeet Machine Participation API
+- aid: viewsmeet-com:viewsmeet-participation-a2a-agent
+  name: ViewsMeet Participation A2A Agent
   description: >-
-    Anonymous REST API (OpenAPI 3.1.0, info.version 0.5.0, 32 operations) for bounded software participation: read today's
-    immutable reviewed question set and issue a one-use nonce-bearing challenge, submit an enum-only ballot and retrieve its
-    durable receipt, optionally register a stable P-256 signing key, read and score the public-domain Mini-IPIP 20 and three
-    stateless assessments (IPIP-50, IPIP-IPC 32, 36QB6) without persistence, run seven-day private personality-perception
-    challenges, create and answer 14-day aggregate-only Group Picks rooms, and read the frozen public Connection Atlas. No
-    securitySchemes; 30 requests per 60-second window per operation.
-  humanURL: https://viewsmeet.com/developers
-  baseURL: https://viewsmeet.com
+    A2A v1.0 agent (JSON-RPC binding at https://viewsmeet.com/api/agent/a2a) with one skill, curated-either-or-participation:
+    a bounded capability handshake that issues today's one-use challenge; the completed task artifact
+    returns the REST submitUrl and receiptTemplate, and ballot submission happens over REST. Anonymous
+    (securitySchemes {}), no streaming or push notifications. The card is served at /.well-known/agent-card.json
+    as application/a2a+json.
+  humanURL: https://viewsmeet.com/developers#a2a
+  baseURL: https://viewsmeet.com/api/agent/a2a
   tags:
-  - agent-native
-  - Surveys & Polls
-  - Personality Assessment
-  - Games
+  - A2A
+  - Agent-Native
   tags_raw:
+  - A2A
   - Agent-native
-  - Surveys & Polls
-  - Personality Assessment
-  - Games
+  - agent-native
+  properties:
+  - type: AgentCard
+    url: a2a/viewsmeet-com-a2a.yml
+  - type: AgentCard
+    name: Agent card (provider-hosted)
+    url: https://viewsmeet.com/.well-known/agent-card.json
+  - type: Documentation
+    url: https://viewsmeet.com/developers#a2a
+  image: https://viewsmeet.com/icon-192.png
+- aid: viewsmeet-com:viewsmeet-com-agent-api
+  name: ViewsMeet Agent API
+  description: The Agent API from ViewsMeet — 2 operation(s) for agent.
+  humanURL: https://viewsmeet.com/developers
+  baseURL: https://viewsmeet.com/mcp
+  tags:
+  - Agent
   properties:
   - type: OpenAPI
-    url: openapi/viewsmeet-com-openapi.yml
-  - type: OpenAPI
-    name: OpenAPI (provider-hosted)
-    url: https://viewsmeet.com/openapi.json
+    url: openapi/viewsmeet-com-agent-api-openapi.yml
   - type: Documentation
     url: https://viewsmeet.com/developers
   - type: APIReference
@@ -84,72 +94,226 @@ apis:
     url: errors/viewsmeet-com-problem-types.yml
   - type: DataModel
     url: data-model/viewsmeet-com-data-model.yml
-  - type: Overlay
-    url: overlays/viewsmeet-com-overlay.yaml
   - type: RateLimits
     url: rate-limits/viewsmeet-com-rate-limits.yml
   - type: Lifecycle
     url: lifecycle/viewsmeet-com-lifecycle.yml
-  image: https://viewsmeet.com/icon-192.png
-- aid: viewsmeet-com:viewsmeet-pick-and-predict-mcp-server
-  name: ViewsMeet Pick + Predict MCP Server
-  description: >-
-    Remote Model Context Protocol server com.viewsmeet/participate at https://viewsmeet.com/mcp (Streamable HTTP, protocol
-    revision 2025-06-18, anonymous, stateless). Anonymous tools/list returns fourteen tools with inputSchema, outputSchema
-    and annotations: the daily ballot loop, public cohort results, the frozen Connection Atlas, methodology sections, Mini-IPIP
-    retrieval and stateless scoring, and exact-code private perception and Know Me participation. Listed in the official MCP
-    Registry (0.5.0) and advertised by an MCP server card, server.json and the ARD catalog.
-  humanURL: https://viewsmeet.com/agents
-  baseURL: https://viewsmeet.com/mcp
-  tags:
-  - MCP
-  - agent-native
-  tags_raw:
-  - MCP
-  - Agent-native
-  properties:
-  - type: MCPServer
-    url: mcp/viewsmeet-com-mcp.yml
-  - type: MCPServer
-    name: MCP endpoint (Streamable HTTP)
-    url: https://viewsmeet.com/mcp
   - type: ToolCrosswalk
     url: mcp/viewsmeet-com-tool-crosswalk.yml
   - type: Documentation
     url: https://viewsmeet.com/developers#mcp
-  - type: OpenAPI
-    url: openapi/viewsmeet-com-openapi.yml
-  image: https://viewsmeet.com/icon-192.png
-- aid: viewsmeet-com:viewsmeet-participation-a2a-agent
-  name: ViewsMeet Participation A2A Agent
-  description: >-
-    A2A v1.0 agent (JSON-RPC binding at https://viewsmeet.com/api/agent/a2a) with one skill, curated-either-or-participation:
-    a bounded capability handshake that issues today's one-use challenge; the completed task artifact returns the REST submitUrl
-    and receiptTemplate, and ballot submission happens over REST. Anonymous (securitySchemes {}), no streaming or push notifications.
-    The card is served at /.well-known/agent-card.json as application/a2a+json.
-  humanURL: https://viewsmeet.com/developers#a2a
-  baseURL: https://viewsmeet.com/api/agent/a2a
+- aid: viewsmeet-com:viewsmeet-com-agents-api
+  name: ViewsMeet Agents API
+  description: The Agents API from ViewsMeet — 4 operation(s) for agents.
+  humanURL: https://viewsmeet.com/developers
+  baseURL: https://viewsmeet.com/mcp
   tags:
-  - A2A
-  - agent-native
-  tags_raw:
-  - A2A
-  - Agent-native
+  - Agents
   properties:
-  - type: AgentCard
-    url: a2a/viewsmeet-com-a2a.yml
-  - type: AgentCard
-    name: Agent card (provider-hosted)
-    url: https://viewsmeet.com/.well-known/agent-card.json
+  - type: OpenAPI
+    url: openapi/viewsmeet-com-agents-api-openapi.yml
   - type: Documentation
-    url: https://viewsmeet.com/developers#a2a
-  image: https://viewsmeet.com/icon-192.png
+    url: https://viewsmeet.com/developers
+  - type: APIReference
+    url: https://viewsmeet.com/openapi.json
+  - type: GettingStarted
+    url: https://viewsmeet.com/developers#quickstart
+  - type: Authentication
+    url: authentication/viewsmeet-com-authentication.yml
+  - type: Conventions
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: Idempotency
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/viewsmeet-com-problem-types.yml
+  - type: DataModel
+    url: data-model/viewsmeet-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/viewsmeet-com-rate-limits.yml
+  - type: Lifecycle
+    url: lifecycle/viewsmeet-com-lifecycle.yml
+  - type: ToolCrosswalk
+    url: mcp/viewsmeet-com-tool-crosswalk.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers#mcp
+- aid: viewsmeet-com:viewsmeet-com-assessments-api
+  name: ViewsMeet Assessments API
+  description: The Assessments API from ViewsMeet — 4 operation(s) for assessments.
+  humanURL: https://viewsmeet.com/developers
+  baseURL: https://viewsmeet.com/mcp
+  tags:
+  - Assessments
+  properties:
+  - type: OpenAPI
+    url: openapi/viewsmeet-com-assessments-api-openapi.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers
+  - type: APIReference
+    url: https://viewsmeet.com/openapi.json
+  - type: GettingStarted
+    url: https://viewsmeet.com/developers#quickstart
+  - type: Authentication
+    url: authentication/viewsmeet-com-authentication.yml
+  - type: Conventions
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: Idempotency
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/viewsmeet-com-problem-types.yml
+  - type: DataModel
+    url: data-model/viewsmeet-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/viewsmeet-com-rate-limits.yml
+  - type: Lifecycle
+    url: lifecycle/viewsmeet-com-lifecycle.yml
+  - type: ToolCrosswalk
+    url: mcp/viewsmeet-com-tool-crosswalk.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers#mcp
+- aid: viewsmeet-com:viewsmeet-com-connections-api
+  name: ViewsMeet Connections API
+  description: The Connections API from ViewsMeet — 1 operation(s) for connections.
+  humanURL: https://viewsmeet.com/developers
+  baseURL: https://viewsmeet.com/mcp
+  tags:
+  - Connections
+  properties:
+  - type: OpenAPI
+    url: openapi/viewsmeet-com-connections-api-openapi.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers
+  - type: APIReference
+    url: https://viewsmeet.com/openapi.json
+  - type: GettingStarted
+    url: https://viewsmeet.com/developers#quickstart
+  - type: Authentication
+    url: authentication/viewsmeet-com-authentication.yml
+  - type: Conventions
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: Idempotency
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/viewsmeet-com-problem-types.yml
+  - type: DataModel
+    url: data-model/viewsmeet-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/viewsmeet-com-rate-limits.yml
+  - type: Lifecycle
+    url: lifecycle/viewsmeet-com-lifecycle.yml
+  - type: ToolCrosswalk
+    url: mcp/viewsmeet-com-tool-crosswalk.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers#mcp
+- aid: viewsmeet-com:viewsmeet-com-experiments-api
+  name: ViewsMeet Experiments API
+  description: The Experiments API from ViewsMeet — 7 operation(s) for experiments.
+  humanURL: https://viewsmeet.com/developers
+  baseURL: https://viewsmeet.com/mcp
+  tags:
+  - Experiments
+  properties:
+  - type: OpenAPI
+    url: openapi/viewsmeet-com-experiments-api-openapi.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers
+  - type: APIReference
+    url: https://viewsmeet.com/openapi.json
+  - type: GettingStarted
+    url: https://viewsmeet.com/developers#quickstart
+  - type: Authentication
+    url: authentication/viewsmeet-com-authentication.yml
+  - type: Conventions
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: Idempotency
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/viewsmeet-com-problem-types.yml
+  - type: DataModel
+    url: data-model/viewsmeet-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/viewsmeet-com-rate-limits.yml
+  - type: Lifecycle
+    url: lifecycle/viewsmeet-com-lifecycle.yml
+  - type: ToolCrosswalk
+    url: mcp/viewsmeet-com-tool-crosswalk.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers#mcp
+- aid: viewsmeet-com:viewsmeet-com-mcp-api
+  name: ViewsMeet MCP API
+  description: The Mcp API from ViewsMeet — 1 operation(s) for mcp.
+  humanURL: https://viewsmeet.com/developers
+  baseURL: https://viewsmeet.com/mcp
+  tags:
+  - Mcp
+  properties:
+  - type: OpenAPI
+    url: openapi/viewsmeet-com-mcp-api-openapi.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers
+  - type: APIReference
+    url: https://viewsmeet.com/openapi.json
+  - type: GettingStarted
+    url: https://viewsmeet.com/developers#quickstart
+  - type: Authentication
+    url: authentication/viewsmeet-com-authentication.yml
+  - type: Conventions
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: Idempotency
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/viewsmeet-com-problem-types.yml
+  - type: DataModel
+    url: data-model/viewsmeet-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/viewsmeet-com-rate-limits.yml
+  - type: Lifecycle
+    url: lifecycle/viewsmeet-com-lifecycle.yml
+  - type: ToolCrosswalk
+    url: mcp/viewsmeet-com-tool-crosswalk.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers#mcp
+- aid: viewsmeet-com:viewsmeet-com-personality-api
+  name: ViewsMeet Personality API
+  description: The Personality API from ViewsMeet — 9 operation(s) for personality.
+  humanURL: https://viewsmeet.com/developers
+  baseURL: https://viewsmeet.com/mcp
+  tags:
+  - Personality
+  properties:
+  - type: OpenAPI
+    url: openapi/viewsmeet-com-personality-api-openapi.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers
+  - type: APIReference
+    url: https://viewsmeet.com/openapi.json
+  - type: GettingStarted
+    url: https://viewsmeet.com/developers#quickstart
+  - type: Authentication
+    url: authentication/viewsmeet-com-authentication.yml
+  - type: Conventions
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: Idempotency
+    url: conventions/viewsmeet-com-conventions.yml
+  - type: ErrorCatalog
+    url: errors/viewsmeet-com-problem-types.yml
+  - type: DataModel
+    url: data-model/viewsmeet-com-data-model.yml
+  - type: RateLimits
+    url: rate-limits/viewsmeet-com-rate-limits.yml
+  - type: Lifecycle
+    url: lifecycle/viewsmeet-com-lifecycle.yml
+  - type: ToolCrosswalk
+    url: mcp/viewsmeet-com-tool-crosswalk.yml
+  - type: Documentation
+    url: https://viewsmeet.com/developers#mcp
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: MCPServer
+  url: https://viewsmeet.com/mcp
 - type: AgenticAccess
   url: agentic-access/viewsmeet-com-agentic-access.yml
 - type: Website
@@ -240,3 +404,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 32
   pass: local-v3
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://viewsmeet.com/.well-known/agent-card.json"
+  grade: "flavored"
+  protocol_version: "1.0"
+  control: 404

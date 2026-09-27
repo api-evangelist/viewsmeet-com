@@ -1,3 +1,5 @@
+# x-archived-from: viewsmeet-com-openapi.yml
+# x-archived-on: 2026-09-26
 # Faithful YAML rendering of https://viewsmeet.com/openapi.json (OpenAPI 3.1.0, info.version 0.5.0),
 # fetched 2026-09-19 by API Evangelist (HTTP 200, application/json, 37,167 bytes). Content is unchanged;
 # the verbatim JSON is archived at openapi/_original/viewsmeet-com-openapi.json.

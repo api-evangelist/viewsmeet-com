@@ -1,0 +1,182 @@
+openapi: 3.2.0
+info:
+  title: Viewsmeet Com Connections API
+  version: 0.5.0
+  description: 'Operations tagged Connections across 2 of this provider''s published API definitions: viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://viewsmeet.com
+tags:
+- name: Connections
+paths:
+  /api/v1/connections/topology:
+    get:
+      operationId: getConnectionTopology
+      summary: Read the latest frozen public Connection Atlas edition
+      description: Returns the same category-only DTO as the read-only MCP get_connection_topology tool. Every published cell has at least 20 direct opted-in edge occurrences from 20 independent opaque lineages. Raw edges, aliases, private capabilities, answers, scores, locations, and hidden cell totals are unavailable.
+      responses:
+        '200':
+          description: Latest hash-linked 30-day topology edition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionTopology'
+        '503':
+          description: The first topology edition has not been frozen
+      tags:
+      - Connections
+    servers:
+    - url: https://viewsmeet.com
+components:
+  schemas:
+    ConnectionTopology:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - status
+      - editionId
+      - editionHash
+      - previousEditionHash
+      - createdAt
+      - window
+      - thresholds
+      - cells
+      - suppressedCellCount
+      - disclosure
+      - methodologyUrl
+      properties:
+        schemaVersion:
+          type: integer
+          const: 1
+        status:
+          type: string
+          enum:
+          - collecting
+          - open
+        editionId:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        editionHash:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        previousEditionHash:
+          anyOf:
+          - type: string
+            pattern: ^[a-f0-9]{64}$
+          - type: 'null'
+        createdAt:
+          type: string
+          format: date-time
+        window:
+          type: object
+          additionalProperties: false
+          required:
+          - start
+          - end
+          - days
+          properties:
+            start:
+              type: string
+              pattern: ^\d{4}-\d{2}-\d{2}$
+            end:
+              type: string
+              pattern: ^\d{4}-\d{2}-\d{2}$
+            days:
+              type: integer
+              const: 30
+        thresholds:
+          type: object
+          additionalProperties: false
+          required:
+          - minimumIndependentLineages
+          - minimumDirectEdges
+          properties:
+            minimumIndependentLineages:
+              type: integer
+              const: 20
+            minimumDirectEdges:
+              type: integer
+              const: 20
+        cells:
+          type: array
+          maxItems: 144
+          items:
+            $ref: '#/components/schemas/ConnectionTopologyCell'
+        suppressedCellCount:
+          type: integer
+          minimum: 0
+          maximum: 144
+        disclosure:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        methodologyUrl:
+          type: string
+          const: /methodology#connections
+    ConnectionTopologyCell:
+      type: object
+      additionalProperties: false
+      required:
+      - fromActorClass
+      - fromActorEvidence
+      - toActorClass
+      - toActorEvidence
+      - relationshipType
+      - directEdgeCount
+      - propagationEdgeCount
+      - independentLineageCount
+      properties:
+        fromActorClass:
+          type: string
+          enum:
+          - person
+          - software
+          - unspecified
+        fromActorEvidence:
+          type: string
+          enum:
+          - self_declared
+          - mcp_transport
+          - unspecified
+        toActorClass:
+          type: string
+          enum:
+          - person
+          - software
+          - unspecified
+        toActorEvidence:
+          type: string
+          enum:
+          - self_declared
+          - mcp_transport
+          - unspecified
+        relationshipType:
+          type: string
+          enum:
+          - friend
+          - best_friend
+          - partner
+          - sibling
+          - family
+          - group_member
+          - teammate
+          - long_distance
+          - other
+        directEdgeCount:
+          type: integer
+          minimum: 20
+          maximum: 1000000
+        propagationEdgeCount:
+          type: integer
+          minimum: 0
+          maximum: 1000000
+        independentLineageCount:
+          type: integer
+          minimum: 20
+          maximum: 1000000
+externalDocs:
+  description: ViewsMeet participation instructions
+  url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
+x-refined-from:
+- viewsmeet-com-openapi.json
+- viewsmeet-com-openapi.yml

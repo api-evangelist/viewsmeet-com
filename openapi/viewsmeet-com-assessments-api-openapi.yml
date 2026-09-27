@@ -1,0 +1,514 @@
+openapi: 3.2.0
+info:
+  title: Viewsmeet Com Assessments API
+  version: 0.5.0
+  description: 'Operations tagged Assessments across 2 of this provider''s published API definitions: viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://viewsmeet.com
+tags:
+- name: Assessments
+paths:
+  /api/v1/assessments:
+    get:
+      operationId: listStatelessAssessments
+      summary: List the three exact stateless self-report assessments
+      description: Returns the closed catalog of IPIP-50, IPIP-IPC 32, and 36QB6 instruments. These published questionnaires were developed for human self-report. A software-produced response vector is only a labeled vector and is not evidence of an agent personality, identity, consciousness, diagnosis, type, percentile, or compatibility.
+      tags:
+      - Assessments
+      responses:
+        '200':
+          description: The closed versioned assessment catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessmentCatalogResponse'
+    servers:
+    - url: https://viewsmeet.com
+  /api/v1/assessments/{slug}/instrument:
+    get:
+      operationId: getStatelessAssessmentInstrument
+      summary: Read one exact public-domain assessment instrument
+      description: Returns the fixed item wording, order, response anchors, instrument ID, and version. Scale assignments and scoring keys remain on the methodology surface; clients must submit the exact advertised ID and version when scoring.
+      tags:
+      - Assessments
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Closed assessment slug from the catalog.
+        schema:
+          $ref: '#/components/schemas/AssessmentSlug'
+      responses:
+        '200':
+          description: Exact versioned instrument and methodology URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessmentInstrumentResponse'
+        '404':
+          description: Assessment slug is not in the closed catalog
+    servers:
+    - url: https://viewsmeet.com
+  /api/v1/assessments/{slug}/methodology:
+    get:
+      operationId: getStatelessAssessmentMethodology
+      summary: Read sources, scoring rules, and limits for one assessment
+      description: Returns the public-domain status, original instrument and scoring sources, deterministic key rules, published reliability metadata where available, explicit limitations, and excluded interpretations.
+      tags:
+      - Assessments
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Closed assessment slug from the catalog.
+        schema:
+          $ref: '#/components/schemas/AssessmentSlug'
+      responses:
+        '200':
+          description: Versioned methodology, source links, and interpretation boundaries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessmentMethodologyResponse'
+        '404':
+          description: Assessment slug is not in the closed catalog
+    servers:
+    - url: https://viewsmeet.com
+  /api/v1/assessments/{slug}/score:
+    post:
+      operationId: scoreStatelessAssessmentResponses
+      summary: Deterministically score one complete assessment vector without persistence
+      description: Validates one exact, complete versioned vector and returns continuous raw scale sums and means. The item vector and scale values are not written to ViewsMeet storage, an account, public data, a friend link, or an AI model. The output is not a diagnosis, type, percentile, compatibility result, selection signal, or validated agent personality.
+      tags:
+      - Assessments
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Closed assessment slug from the catalog.
+        schema:
+          $ref: '#/components/schemas/AssessmentSlug'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssessmentScoreRequest'
+      responses:
+        '200':
+          description: Continuous raw scale scores; submitted responses were not persisted
+          headers:
+            Cache-Control:
+              description: Successful score responses are private and never stored by HTTP caches.
+              schema:
+                type: string
+                example: private, no-store, max-age=0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessmentScoreResult'
+        '400':
+          description: Wrong instrument/version, missing or duplicate items, extra fields, or an invalid response value
+        '404':
+          description: Assessment slug is not in the closed catalog
+        '429':
+          description: Rate limited
+        '503':
+          description: Stateless scoring service is not configured
+    servers:
+    - url: https://viewsmeet.com
+components:
+  schemas:
+    AssessmentCatalogEntry:
+      type: object
+      additionalProperties: false
+      required:
+      - slug
+      - id
+      - version
+      - title
+      - itemCount
+      - estimatedMinutes
+      - summary
+      properties:
+        slug:
+          $ref: '#/components/schemas/AssessmentSlug'
+        id:
+          type: string
+          enum:
+          - ipip-big-five-50-en-v1
+          - ipip-ipc-32-en-v1
+          - qb6-big-six-36-en-v1
+        version:
+          type: integer
+          const: 1
+        title:
+          type: string
+          minLength: 1
+        itemCount:
+          type: integer
+          enum:
+          - 50
+          - 32
+          - 36
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+          maximum: 15
+        summary:
+          type: string
+          minLength: 1
+    AssessmentInstrumentResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - instrument
+      - methodologyUrl
+      properties:
+        instrument:
+          $ref: '#/components/schemas/AssessmentInstrument'
+        methodologyUrl:
+          type: string
+          format: uri
+    AssessmentMethodology:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - instrument
+      - publicDomain
+      - sourceUrls
+      - citation
+      - scoring
+      - limitations
+      - excludedInterpretations
+      properties:
+        schemaVersion:
+          type: integer
+          const: 1
+        instrument:
+          type: object
+          additionalProperties: false
+          required:
+          - id
+          - slug
+          - version
+          - scoringVersion
+          - locale
+          - itemCount
+          - scaleCount
+          properties:
+            id:
+              type: string
+              enum:
+              - ipip-big-five-50-en-v1
+              - ipip-ipc-32-en-v1
+              - qb6-big-six-36-en-v1
+            slug:
+              $ref: '#/components/schemas/AssessmentSlug'
+            version:
+              type: integer
+              const: 1
+            scoringVersion:
+              type: string
+            locale:
+              type: string
+              const: en
+            itemCount:
+              type: integer
+              enum:
+              - 50
+              - 32
+              - 36
+            scaleCount:
+              type: integer
+              minimum: 5
+              maximum: 8
+        publicDomain:
+          type: object
+          additionalProperties: false
+          required:
+          - status
+          - commercialUsePermitted
+          - permissionUrl
+          properties:
+            status:
+              type: string
+              const: public-domain
+            commercialUsePermitted:
+              type: boolean
+              const: true
+            permissionUrl:
+              type: string
+              format: uri
+        sourceUrls:
+          type: object
+          additionalProperties: false
+          required:
+          - instrument
+          - scoringKey
+          - scoringInstructions
+          properties:
+            instrument:
+              type: string
+              format: uri
+            scoringKey:
+              type: string
+              format: uri
+            scoringInstructions:
+              type: string
+              format: uri
+        citation:
+          type: string
+          minLength: 1
+        scoring:
+          type: object
+          additionalProperties: true
+        sourceCoefficientAlpha:
+          type: object
+          additionalProperties:
+            type: number
+            minimum: 0
+            maximum: 1
+        limitations:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        excludedInterpretations:
+          type: array
+          minItems: 1
+          items:
+            type: string
+    AssessmentCatalogResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - assessments
+      properties:
+        assessments:
+          type: array
+          minItems: 3
+          maxItems: 3
+          items:
+            $ref: '#/components/schemas/AssessmentCatalogEntry'
+    AssessmentItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - text
+      properties:
+        id:
+          type: string
+          pattern: ^[a-z0-9-]{3,80}$
+        text:
+          type: string
+          minLength: 1
+          maxLength: 240
+    AssessmentResponseEntry:
+      type: object
+      additionalProperties: false
+      required:
+      - itemId
+      - response
+      properties:
+        itemId:
+          type: string
+          pattern: ^[a-z0-9-]{3,80}$
+        response:
+          type: integer
+          minimum: 0
+          maximum: 5
+          description: Use only a value advertised by the selected instrument. IPIP instruments use 1–5; 36QB6 uses 0–5.
+    AssessmentSlug:
+      type: string
+      enum:
+      - ipip-big-five-50
+      - ipip-ipc-32
+      - qb6-big-six-36
+      description: One exact, versioned public-domain self-report instrument exposed by the stateless assessment service.
+    AssessmentInstrument:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - id
+      - slug
+      - version
+      - title
+      - instruction
+      - estimatedMinutes
+      - itemCount
+      - responseOptions
+      - items
+      properties:
+        schemaVersion:
+          type: integer
+          const: 1
+        id:
+          type: string
+          enum:
+          - ipip-big-five-50-en-v1
+          - ipip-ipc-32-en-v1
+          - qb6-big-six-36-en-v1
+        slug:
+          $ref: '#/components/schemas/AssessmentSlug'
+        version:
+          type: integer
+          const: 1
+        title:
+          type: string
+          minLength: 1
+        instruction:
+          type: string
+          minLength: 1
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+          maximum: 15
+        itemCount:
+          type: integer
+          enum:
+          - 50
+          - 32
+          - 36
+        responseOptions:
+          type: array
+          minItems: 5
+          maxItems: 6
+          items:
+            $ref: '#/components/schemas/AssessmentResponseOption'
+        items:
+          type: array
+          minItems: 32
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/AssessmentItem'
+    AssessmentScoreRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - instrumentId
+      - version
+      - responses
+      properties:
+        instrumentId:
+          type: string
+          enum:
+          - ipip-big-five-50-en-v1
+          - ipip-ipc-32-en-v1
+          - qb6-big-six-36-en-v1
+        version:
+          type: integer
+          const: 1
+        responses:
+          type: array
+          minItems: 32
+          maxItems: 50
+          description: A complete vector containing every item from the selected instrument exactly once.
+          items:
+            $ref: '#/components/schemas/AssessmentResponseEntry'
+    AssessmentResponseOption:
+      type: object
+      additionalProperties: false
+      required:
+      - value
+      - label
+      properties:
+        value:
+          type: integer
+          minimum: 0
+          maximum: 5
+        label:
+          type: string
+          minLength: 1
+    AssessmentScaleScore:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - rawSum
+      - rawMean
+      - itemCount
+      - minimum
+      - maximum
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        rawSum:
+          type: number
+        rawMean:
+          type: number
+        itemCount:
+          type: integer
+          minimum: 4
+          maximum: 10
+        minimum:
+          type: number
+        maximum:
+          type: number
+    AssessmentScoreResult:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - instrument
+      - scales
+      - disclosure
+      - methodologyUrl
+      properties:
+        schemaVersion:
+          type: integer
+          const: 1
+        instrument:
+          type: object
+          additionalProperties: false
+          required:
+          - id
+          - slug
+          - version
+          - scoringVersion
+          properties:
+            id:
+              type: string
+              enum:
+              - ipip-big-five-50-en-v1
+              - ipip-ipc-32-en-v1
+              - qb6-big-six-36-en-v1
+            slug:
+              $ref: '#/components/schemas/AssessmentSlug'
+            version:
+              type: integer
+              const: 1
+            scoringVersion:
+              type: string
+        scales:
+          type: array
+          minItems: 5
+          maxItems: 8
+          items:
+            $ref: '#/components/schemas/AssessmentScaleScore'
+        disclosure:
+          type: string
+          minLength: 1
+        methodologyUrl:
+          type: string
+          format: uri
+    AssessmentMethodologyResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - methodology
+      properties:
+        methodology:
+          $ref: '#/components/schemas/AssessmentMethodology'
+externalDocs:
+  description: ViewsMeet participation instructions
+  url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
+x-refined-from:
+- viewsmeet-com-openapi.json
+- viewsmeet-com-openapi.yml
