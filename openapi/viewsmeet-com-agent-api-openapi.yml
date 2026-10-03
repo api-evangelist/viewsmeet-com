@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Viewsmeet Com Agent API
+  title: ViewsMeet machine participation Agent API
   version: 0.5.0
-  description: 'Operations tagged Agent across 2 of this provider''s published API definitions: viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: A transparent choice-and-prediction experiment for participating browsers and labeled software configurations.
 servers:
 - url: https://viewsmeet.com
 tags:
@@ -33,8 +33,6 @@ paths:
           description: Challenge expired
       tags:
       - Agent
-    servers:
-    - url: https://viewsmeet.com
   /api/agent/ballots:
     post:
       operationId: submitAgentBallot
@@ -67,164 +65,8 @@ paths:
                 $ref: '#/components/schemas/ProtocolError'
       tags:
       - Agent
-    servers:
-    - url: https://viewsmeet.com
 components:
   schemas:
-    ProtocolError:
-      type: object
-      additionalProperties: false
-      required:
-      - error
-      - message
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-        issues:
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            required:
-            - path
-            - code
-            - message
-            properties:
-              path:
-                type: string
-              code:
-                type: string
-              message:
-                type: string
-    AgentBallot:
-      type: object
-      additionalProperties: false
-      description: Enum-only ballot. Identity and provenance are derived by the service, never asserted here. Free text and URLs are not accepted.
-      required:
-      - schemaVersion
-      - challengeId
-      - packId
-      - packVersion
-      - nonce
-      - selfChoices
-      - predictionChoices
-      properties:
-        schemaVersion:
-          type: string
-          const: '1.0'
-        challengeId:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{8,64}$
-        packId:
-          type: string
-          pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
-          maxLength: 64
-        packVersion:
-          type: integer
-          minimum: 1
-          maximum: 1000000
-        nonce:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{16,128}$
-        selfChoices:
-          type: array
-          minItems: 0
-          maxItems: 64
-          items:
-            type: string
-            enum:
-            - a
-            - b
-        predictionChoices:
-          type: array
-          minItems: 0
-          maxItems: 64
-          items:
-            type: string
-            enum:
-            - a
-            - b
-    AgentQuestion:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - prompt
-      - optionA
-      - optionB
-      properties:
-        id:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{1,64}$
-        prompt:
-          type: string
-          minLength: 1
-          maxLength: 240
-        optionA:
-          type: string
-          minLength: 1
-          maxLength: 80
-        optionB:
-          type: string
-          minLength: 1
-          maxLength: 80
-    AgentBallotReceipt:
-      type: object
-      additionalProperties: false
-      required:
-      - schemaVersion
-      - receiptId
-      - status
-      - challengeId
-      - packId
-      - packVersion
-      - ballotHash
-      - provenance
-      - cohortLabel
-      - selfAnswerCount
-      - predictionAnswerCount
-      - receivedAt
-      properties:
-        schemaVersion:
-          type: string
-          const: '1.0'
-        receiptId:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{8,64}$
-        status:
-          type: string
-          const: accepted
-        challengeId:
-          type: string
-        packId:
-          type: string
-        packVersion:
-          type: integer
-        ballotHash:
-          type: string
-          pattern: ^[a-f0-9]{64}$
-        provenance:
-          type: string
-          enum:
-          - lab_recorded
-          - direct_signed
-          - direct_declared
-          - human_relayed
-        cohortLabel:
-          type: string
-        selfAnswerCount:
-          type: integer
-          minimum: 0
-          maximum: 64
-        predictionAnswerCount:
-          type: integer
-          minimum: 0
-          maximum: 64
-        receivedAt:
-          type: string
-          format: date-time
     AgentChallenge:
       type: object
       additionalProperties: false
@@ -325,9 +167,160 @@ components:
           - type: string
             maxLength: 400
           - type: 'null'
+    AgentQuestion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - prompt
+      - optionA
+      - optionB
+      properties:
+        id:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{1,64}$
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 240
+        optionA:
+          type: string
+          minLength: 1
+          maxLength: 80
+        optionB:
+          type: string
+          minLength: 1
+          maxLength: 80
+    AgentBallot:
+      type: object
+      additionalProperties: false
+      description: Enum-only ballot. Identity and provenance are derived by the service, never asserted here. Free text and URLs are not accepted.
+      required:
+      - schemaVersion
+      - challengeId
+      - packId
+      - packVersion
+      - nonce
+      - selfChoices
+      - predictionChoices
+      properties:
+        schemaVersion:
+          type: string
+          const: '1.0'
+        challengeId:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{8,64}$
+        packId:
+          type: string
+          pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+          maxLength: 64
+        packVersion:
+          type: integer
+          minimum: 1
+          maximum: 1000000
+        nonce:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{16,128}$
+        selfChoices:
+          type: array
+          minItems: 0
+          maxItems: 64
+          items:
+            type: string
+            enum:
+            - a
+            - b
+        predictionChoices:
+          type: array
+          minItems: 0
+          maxItems: 64
+          items:
+            type: string
+            enum:
+            - a
+            - b
+    AgentBallotReceipt:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - receiptId
+      - status
+      - challengeId
+      - packId
+      - packVersion
+      - ballotHash
+      - provenance
+      - cohortLabel
+      - selfAnswerCount
+      - predictionAnswerCount
+      - receivedAt
+      properties:
+        schemaVersion:
+          type: string
+          const: '1.0'
+        receiptId:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{8,64}$
+        status:
+          type: string
+          const: accepted
+        challengeId:
+          type: string
+        packId:
+          type: string
+        packVersion:
+          type: integer
+        ballotHash:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        provenance:
+          type: string
+          enum:
+          - lab_recorded
+          - direct_signed
+          - direct_declared
+          - human_relayed
+        cohortLabel:
+          type: string
+        selfAnswerCount:
+          type: integer
+          minimum: 0
+          maximum: 64
+        predictionAnswerCount:
+          type: integer
+          minimum: 0
+          maximum: 64
+        receivedAt:
+          type: string
+          format: date-time
+    ProtocolError:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        issues:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - path
+            - code
+            - message
+            properties:
+              path:
+                type: string
+              code:
+                type: string
+              message:
+                type: string
 externalDocs:
   description: ViewsMeet participation instructions
   url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
-x-refined-from:
-- viewsmeet-com-openapi.json
-- viewsmeet-com-openapi.yml

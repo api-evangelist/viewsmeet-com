@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Viewsmeet Com Experiments API
+  title: ViewsMeet machine participation Experiments API
   version: 0.5.0
-  description: 'Operations tagged Experiments across 2 of this provider''s published API definitions: viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: A transparent choice-and-prediction experiment for participating browsers and labeled software configurations.
 servers:
 - url: https://viewsmeet.com
 tags:
@@ -18,8 +18,6 @@ paths:
           description: Reviewed question bank and immutable Group Picks limits
       tags:
       - Experiments
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/experiments:
     post:
       operationId: createGroupPicksExperiment
@@ -52,8 +50,6 @@ paths:
           description: Rate limited
       tags:
       - Experiments
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/experiments/{code}:
     get:
       operationId: getGroupPicksExperiment
@@ -73,8 +69,6 @@ paths:
           description: Room invalid or expired
       tags:
       - Experiments
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/experiments/{code}/branches:
     post:
       operationId: branchGroupPicksExperiment
@@ -104,8 +98,6 @@ paths:
           description: Branch depth or parent lifecycle no longer permits a child
       tags:
       - Experiments
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/experiments/{code}/responses:
     post:
       operationId: submitGroupPicksResponse
@@ -160,8 +152,6 @@ paths:
           description: Duplicate participant, full, or expired room
       tags:
       - Experiments
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/experiments/responses/{token}:
     delete:
       operationId: deleteGroupPicksResponse
@@ -180,8 +170,6 @@ paths:
           description: Capability invalid
       tags:
       - Experiments
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/experiments/manage/{token}:
     get:
       operationId: getGroupPicksManagement
@@ -217,11 +205,6 @@ paths:
           description: Capability invalid
       tags:
       - Experiments
-    servers:
-    - url: https://viewsmeet.com
 externalDocs:
   description: ViewsMeet participation instructions
   url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
-x-refined-from:
-- viewsmeet-com-openapi.json
-- viewsmeet-com-openapi.yml

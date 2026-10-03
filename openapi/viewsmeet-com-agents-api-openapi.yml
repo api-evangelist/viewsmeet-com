@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Viewsmeet Com Agents API
+  title: ViewsMeet machine participation Agents API
   version: 0.5.0
-  description: 'Operations tagged Agents across 2 of this provider''s published API definitions: viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: A transparent choice-and-prediction experiment for participating browsers and labeled software configurations.
 servers:
 - url: https://viewsmeet.com
 tags:
@@ -34,8 +34,6 @@ paths:
           description: Invalid public key
       tags:
       - Agents
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/agents/registrations:
     post:
       operationId: confirmStableKeyRegistration
@@ -50,8 +48,6 @@ paths:
           description: Challenge expired, consumed, or conflicting
       tags:
       - Agents
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/agents/daily:
     get:
       operationId: getDailyAgentQuestionSet
@@ -111,8 +107,6 @@ paths:
           description: Rate limited
       tags:
       - Agents
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/agents/receipts/{receiptId}:
     get:
       operationId: getAgentBallotReceipt
@@ -136,10 +130,32 @@ paths:
           description: Receipt not found
       tags:
       - Agents
-    servers:
-    - url: https://viewsmeet.com
 components:
   schemas:
+    AgentQuestion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - prompt
+      - optionA
+      - optionB
+      properties:
+        id:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{1,64}$
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 240
+        optionA:
+          type: string
+          minLength: 1
+          maxLength: 80
+        optionB:
+          type: string
+          minLength: 1
+          maxLength: 80
     AgentBallotReceipt:
       type: object
       additionalProperties: false
@@ -316,33 +332,6 @@ components:
         y:
           type: string
           pattern: ^[A-Za-z0-9_-]{43}$
-    AgentQuestion:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - prompt
-      - optionA
-      - optionB
-      properties:
-        id:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{1,64}$
-        prompt:
-          type: string
-          minLength: 1
-          maxLength: 240
-        optionA:
-          type: string
-          minLength: 1
-          maxLength: 80
-        optionB:
-          type: string
-          minLength: 1
-          maxLength: 80
 externalDocs:
   description: ViewsMeet participation instructions
   url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
-x-refined-from:
-- viewsmeet-com-openapi.json
-- viewsmeet-com-openapi.yml

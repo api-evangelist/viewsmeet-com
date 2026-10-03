@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Viewsmeet Com Assessments API
+  title: ViewsMeet machine participation Assessments API
   version: 0.5.0
-  description: 'Operations tagged Assessments across 2 of this provider''s published API definitions: viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: A transparent choice-and-prediction experiment for participating browsers and labeled software configurations.
 servers:
 - url: https://viewsmeet.com
 tags:
@@ -22,8 +22,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssessmentCatalogResponse'
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/assessments/{slug}/instrument:
     get:
       operationId: getStatelessAssessmentInstrument
@@ -47,8 +45,6 @@ paths:
                 $ref: '#/components/schemas/AssessmentInstrumentResponse'
         '404':
           description: Assessment slug is not in the closed catalog
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/assessments/{slug}/methodology:
     get:
       operationId: getStatelessAssessmentMethodology
@@ -72,8 +68,6 @@ paths:
                 $ref: '#/components/schemas/AssessmentMethodologyResponse'
         '404':
           description: Assessment slug is not in the closed catalog
-    servers:
-    - url: https://viewsmeet.com
   /api/v1/assessments/{slug}/score:
     post:
       operationId: scoreStatelessAssessmentResponses
@@ -115,8 +109,6 @@ paths:
           description: Rate limited
         '503':
           description: Stateless scoring service is not configured
-    servers:
-    - url: https://viewsmeet.com
 components:
   schemas:
     AssessmentCatalogEntry:
@@ -158,18 +150,139 @@ components:
         summary:
           type: string
           minLength: 1
-    AssessmentInstrumentResponse:
+    AssessmentSlug:
+      type: string
+      enum:
+      - ipip-big-five-50
+      - ipip-ipc-32
+      - qb6-big-six-36
+      description: One exact, versioned public-domain self-report instrument exposed by the stateless assessment service.
+    AssessmentCatalogResponse:
       type: object
       additionalProperties: false
       required:
-      - instrument
-      - methodologyUrl
+      - assessments
       properties:
-        instrument:
-          $ref: '#/components/schemas/AssessmentInstrument'
-        methodologyUrl:
+        assessments:
+          type: array
+          minItems: 3
+          maxItems: 3
+          items:
+            $ref: '#/components/schemas/AssessmentCatalogEntry'
+    AssessmentResponseEntry:
+      type: object
+      additionalProperties: false
+      required:
+      - itemId
+      - response
+      properties:
+        itemId:
           type: string
-          format: uri
+          pattern: ^[a-z0-9-]{3,80}$
+        response:
+          type: integer
+          minimum: 0
+          maximum: 5
+          description: Use only a value advertised by the selected instrument. IPIP instruments use 1–5; 36QB6 uses 0–5.
+    AssessmentInstrument:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - id
+      - slug
+      - version
+      - title
+      - instruction
+      - estimatedMinutes
+      - itemCount
+      - responseOptions
+      - items
+      properties:
+        schemaVersion:
+          type: integer
+          const: 1
+        id:
+          type: string
+          enum:
+          - ipip-big-five-50-en-v1
+          - ipip-ipc-32-en-v1
+          - qb6-big-six-36-en-v1
+        slug:
+          $ref: '#/components/schemas/AssessmentSlug'
+        version:
+          type: integer
+          const: 1
+        title:
+          type: string
+          minLength: 1
+        instruction:
+          type: string
+          minLength: 1
+        estimatedMinutes:
+          type: integer
+          minimum: 1
+          maximum: 15
+        itemCount:
+          type: integer
+          enum:
+          - 50
+          - 32
+          - 36
+        responseOptions:
+          type: array
+          minItems: 5
+          maxItems: 6
+          items:
+            $ref: '#/components/schemas/AssessmentResponseOption'
+        items:
+          type: array
+          minItems: 32
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/AssessmentItem'
+    AssessmentItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - text
+      properties:
+        id:
+          type: string
+          pattern: ^[a-z0-9-]{3,80}$
+        text:
+          type: string
+          minLength: 1
+          maxLength: 240
+    AssessmentScaleScore:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - rawSum
+      - rawMean
+      - itemCount
+      - minimum
+      - maximum
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        rawSum:
+          type: number
+        rawMean:
+          type: number
+        itemCount:
+          type: integer
+          minimum: 4
+          maximum: 10
+        minimum:
+          type: number
+        maximum:
+          type: number
     AssessmentMethodology:
       type: object
       additionalProperties: false
@@ -280,177 +393,26 @@ components:
           minItems: 1
           items:
             type: string
-    AssessmentCatalogResponse:
+    AssessmentInstrumentResponse:
       type: object
       additionalProperties: false
       required:
-      - assessments
+      - instrument
+      - methodologyUrl
       properties:
-        assessments:
-          type: array
-          minItems: 3
-          maxItems: 3
-          items:
-            $ref: '#/components/schemas/AssessmentCatalogEntry'
-    AssessmentItem:
+        instrument:
+          $ref: '#/components/schemas/AssessmentInstrument'
+        methodologyUrl:
+          type: string
+          format: uri
+    AssessmentMethodologyResponse:
       type: object
       additionalProperties: false
       required:
-      - id
-      - text
+      - methodology
       properties:
-        id:
-          type: string
-          pattern: ^[a-z0-9-]{3,80}$
-        text:
-          type: string
-          minLength: 1
-          maxLength: 240
-    AssessmentResponseEntry:
-      type: object
-      additionalProperties: false
-      required:
-      - itemId
-      - response
-      properties:
-        itemId:
-          type: string
-          pattern: ^[a-z0-9-]{3,80}$
-        response:
-          type: integer
-          minimum: 0
-          maximum: 5
-          description: Use only a value advertised by the selected instrument. IPIP instruments use 1–5; 36QB6 uses 0–5.
-    AssessmentSlug:
-      type: string
-      enum:
-      - ipip-big-five-50
-      - ipip-ipc-32
-      - qb6-big-six-36
-      description: One exact, versioned public-domain self-report instrument exposed by the stateless assessment service.
-    AssessmentInstrument:
-      type: object
-      additionalProperties: false
-      required:
-      - schemaVersion
-      - id
-      - slug
-      - version
-      - title
-      - instruction
-      - estimatedMinutes
-      - itemCount
-      - responseOptions
-      - items
-      properties:
-        schemaVersion:
-          type: integer
-          const: 1
-        id:
-          type: string
-          enum:
-          - ipip-big-five-50-en-v1
-          - ipip-ipc-32-en-v1
-          - qb6-big-six-36-en-v1
-        slug:
-          $ref: '#/components/schemas/AssessmentSlug'
-        version:
-          type: integer
-          const: 1
-        title:
-          type: string
-          minLength: 1
-        instruction:
-          type: string
-          minLength: 1
-        estimatedMinutes:
-          type: integer
-          minimum: 1
-          maximum: 15
-        itemCount:
-          type: integer
-          enum:
-          - 50
-          - 32
-          - 36
-        responseOptions:
-          type: array
-          minItems: 5
-          maxItems: 6
-          items:
-            $ref: '#/components/schemas/AssessmentResponseOption'
-        items:
-          type: array
-          minItems: 32
-          maxItems: 50
-          items:
-            $ref: '#/components/schemas/AssessmentItem'
-    AssessmentScoreRequest:
-      type: object
-      additionalProperties: false
-      required:
-      - instrumentId
-      - version
-      - responses
-      properties:
-        instrumentId:
-          type: string
-          enum:
-          - ipip-big-five-50-en-v1
-          - ipip-ipc-32-en-v1
-          - qb6-big-six-36-en-v1
-        version:
-          type: integer
-          const: 1
-        responses:
-          type: array
-          minItems: 32
-          maxItems: 50
-          description: A complete vector containing every item from the selected instrument exactly once.
-          items:
-            $ref: '#/components/schemas/AssessmentResponseEntry'
-    AssessmentResponseOption:
-      type: object
-      additionalProperties: false
-      required:
-      - value
-      - label
-      properties:
-        value:
-          type: integer
-          minimum: 0
-          maximum: 5
-        label:
-          type: string
-          minLength: 1
-    AssessmentScaleScore:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - name
-      - rawSum
-      - rawMean
-      - itemCount
-      - minimum
-      - maximum
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        rawSum:
-          type: number
-        rawMean:
-          type: number
-        itemCount:
-          type: integer
-          minimum: 4
-          maximum: 10
-        minimum:
-          type: number
-        maximum:
-          type: number
+        methodology:
+          $ref: '#/components/schemas/AssessmentMethodology'
     AssessmentScoreResult:
       type: object
       additionalProperties: false
@@ -498,17 +460,44 @@ components:
         methodologyUrl:
           type: string
           format: uri
-    AssessmentMethodologyResponse:
+    AssessmentResponseOption:
       type: object
       additionalProperties: false
       required:
-      - methodology
+      - value
+      - label
       properties:
-        methodology:
-          $ref: '#/components/schemas/AssessmentMethodology'
+        value:
+          type: integer
+          minimum: 0
+          maximum: 5
+        label:
+          type: string
+          minLength: 1
+    AssessmentScoreRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - instrumentId
+      - version
+      - responses
+      properties:
+        instrumentId:
+          type: string
+          enum:
+          - ipip-big-five-50-en-v1
+          - ipip-ipc-32-en-v1
+          - qb6-big-six-36-en-v1
+        version:
+          type: integer
+          const: 1
+        responses:
+          type: array
+          minItems: 32
+          maxItems: 50
+          description: A complete vector containing every item from the selected instrument exactly once.
+          items:
+            $ref: '#/components/schemas/AssessmentResponseEntry'
 externalDocs:
   description: ViewsMeet participation instructions
   url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
-x-refined-from:
-- viewsmeet-com-openapi.json
-- viewsmeet-com-openapi.yml

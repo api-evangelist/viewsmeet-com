@@ -1,8 +1,7 @@
 {
   "provider": "viewsmeet-com",
   "sources": [
-    "_original/viewsmeet-com-openapi.json",
-    "viewsmeet-com-openapi.yml"
+    "_original/viewsmeet-com-openapi.json"
   ],
   "outputs": [
     "viewsmeet-com-agent-api-openapi.yml",
@@ -13,12 +12,11 @@
     "viewsmeet-com-mcp-api-openapi.yml",
     "viewsmeet-com-personality-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/viewsmeet-com-openapi.yml"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "1 archived document(s) dropped as subsets of other archived documents",
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "viewsmeet-com-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "viewsmeet-com-openapi.json: tagged paths POST /mcp -> Mcp",
@@ -56,50 +54,16 @@
     "viewsmeet-com-openapi.json: declared missing tag: Experiments",
     "viewsmeet-com-openapi.json: declared missing tag: Mcp",
     "viewsmeet-com-openapi.json: declared missing tag: Personality",
-    "viewsmeet-com-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "viewsmeet-com-openapi.yml: tagged paths POST /mcp -> Mcp",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/connections/topology -> Connections",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/personality/instrument -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/personality/score -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/personality/methodology -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/personality/challenges -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/personality/challenges/{code} -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/personality/challenges/{code}/perceptions -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/personality/perceptions/{token} -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths DELETE /api/v1/personality/perceptions/{token} -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/personality/manage/{token} -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths DELETE /api/v1/personality/manage/{token} -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/personality/challenges/{code}/report -> Personality",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/experiments/questions -> Experiments",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/experiments -> Experiments",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/experiments/{code} -> Experiments",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/experiments/{code}/branches -> Experiments",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/experiments/{code}/responses -> Experiments",
-    "viewsmeet-com-openapi.yml: tagged paths DELETE /api/v1/experiments/responses/{token} -> Experiments",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/experiments/manage/{token} -> Experiments",
-    "viewsmeet-com-openapi.yml: tagged paths DELETE /api/v1/experiments/manage/{token} -> Experiments",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/agents/registrations/challenge -> Agents",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/agents/registrations -> Agents",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/agents/daily -> Agents",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/v1/agents/daily -> Agents",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/agent/challenges/{challengeId} -> Agent",
-    "viewsmeet-com-openapi.yml: tagged paths POST /api/agent/ballots -> Agent",
-    "viewsmeet-com-openapi.yml: tagged paths GET /api/v1/agents/receipts/{receiptId} -> Agents",
-    "viewsmeet-com-openapi.yml: declared missing tag: Agent",
-    "viewsmeet-com-openapi.yml: declared missing tag: Agents",
-    "viewsmeet-com-openapi.yml: declared missing tag: Assessments",
-    "viewsmeet-com-openapi.yml: declared missing tag: Connections",
-    "viewsmeet-com-openapi.yml: declared missing tag: Experiments",
-    "viewsmeet-com-openapi.yml: declared missing tag: Mcp",
-    "viewsmeet-com-openapi.yml: declared missing tag: Personality",
-    "tag 'Agent' spans 2 source specs (viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml): per-path servers applied",
-    "tag 'Agents' spans 2 source specs (viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml): per-path servers applied",
-    "tag 'Assessments' spans 2 source specs (viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml): per-path servers applied",
-    "tag 'Connections' spans 2 source specs (viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml): per-path servers applied",
-    "tag 'Experiments' spans 2 source specs (viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml): per-path servers applied",
-    "tag 'Mcp' spans 2 source specs (viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml): per-path servers applied",
-    "tag 'Personality' spans 2 source specs (viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml): per-path servers applied",
-    "apis.yml register: written (+7 apis, 8 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "_original/viewsmeet-com-openapi.yml: archived document superseded by a larger archived document",
+    "viewsmeet-com-agent-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "viewsmeet-com-agents-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "viewsmeet-com-assessments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "viewsmeet-com-connections-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "viewsmeet-com-experiments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "viewsmeet-com-mcp-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "viewsmeet-com-personality-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

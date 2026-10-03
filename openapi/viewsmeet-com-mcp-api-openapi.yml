@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Viewsmeet Com MCP API
+  title: ViewsMeet machine participation MCP API
   version: 0.5.0
-  description: 'Operations tagged Mcp across 2 of this provider''s published API definitions: viewsmeet-com-openapi.json, viewsmeet-com-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: A transparent choice-and-prediction experiment for participating browsers and labeled software configurations.
 servers:
 - url: https://viewsmeet.com
 tags:
@@ -31,11 +31,6 @@ paths:
           description: Rate limited
       tags:
       - MCP
-    servers:
-    - url: https://viewsmeet.com
 externalDocs:
   description: ViewsMeet participation instructions
   url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
-x-refined-from:
-- viewsmeet-com-openapi.json
-- viewsmeet-com-openapi.yml
