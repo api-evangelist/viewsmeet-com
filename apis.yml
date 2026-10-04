@@ -74,6 +74,8 @@ apis:
   humanURL: https://viewsmeet.com/developers
   baseURL: https://viewsmeet.com/mcp
   tags:
+  - Agents
+  tags_raw:
   - Agent
   properties:
   - type: OpenAPI
@@ -142,6 +144,8 @@ apis:
   humanURL: https://viewsmeet.com/developers
   baseURL: https://viewsmeet.com/mcp
   tags:
+  - Assessment
+  tags_raw:
   - Assessments
   properties:
   - type: OpenAPI
@@ -244,6 +248,8 @@ apis:
   humanURL: https://viewsmeet.com/developers
   baseURL: https://viewsmeet.com/mcp
   tags:
+  - MCP
+  tags_raw:
   - Mcp
   properties:
   - type: OpenAPI
