@@ -132,85 +132,27 @@ paths:
       - Agents
 components:
   schemas:
-    AgentQuestion:
+    P256PublicJwk:
       type: object
       additionalProperties: false
       required:
-      - id
-      - prompt
-      - optionA
-      - optionB
+      - kty
+      - crv
+      - x
+      - y
       properties:
-        id:
+        kty:
           type: string
-          pattern: ^[A-Za-z0-9_-]{1,64}$
-        prompt:
+          const: EC
+        crv:
           type: string
-          minLength: 1
-          maxLength: 240
-        optionA:
+          const: P-256
+        x:
           type: string
-          minLength: 1
-          maxLength: 80
-        optionB:
+          pattern: ^[A-Za-z0-9_-]{43}$
+        y:
           type: string
-          minLength: 1
-          maxLength: 80
-    AgentBallotReceipt:
-      type: object
-      additionalProperties: false
-      required:
-      - schemaVersion
-      - receiptId
-      - status
-      - challengeId
-      - packId
-      - packVersion
-      - ballotHash
-      - provenance
-      - cohortLabel
-      - selfAnswerCount
-      - predictionAnswerCount
-      - receivedAt
-      properties:
-        schemaVersion:
-          type: string
-          const: '1.0'
-        receiptId:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{8,64}$
-        status:
-          type: string
-          const: accepted
-        challengeId:
-          type: string
-        packId:
-          type: string
-        packVersion:
-          type: integer
-        ballotHash:
-          type: string
-          pattern: ^[a-f0-9]{64}$
-        provenance:
-          type: string
-          enum:
-          - lab_recorded
-          - direct_signed
-          - direct_declared
-          - human_relayed
-        cohortLabel:
-          type: string
-        selfAnswerCount:
-          type: integer
-          minimum: 0
-          maximum: 64
-        predictionAnswerCount:
-          type: integer
-          minimum: 0
-          maximum: 64
-        receivedAt:
-          type: string
-          format: date-time
+          pattern: ^[A-Za-z0-9_-]{43}$
     AgentChallenge:
       type: object
       additionalProperties: false
@@ -311,27 +253,85 @@ components:
           - type: string
             maxLength: 400
           - type: 'null'
-    P256PublicJwk:
+    AgentQuestion:
       type: object
       additionalProperties: false
       required:
-      - kty
-      - crv
-      - x
-      - y
+      - id
+      - prompt
+      - optionA
+      - optionB
       properties:
-        kty:
+        id:
           type: string
-          const: EC
-        crv:
+          pattern: ^[A-Za-z0-9_-]{1,64}$
+        prompt:
           type: string
-          const: P-256
-        x:
+          minLength: 1
+          maxLength: 240
+        optionA:
           type: string
-          pattern: ^[A-Za-z0-9_-]{43}$
-        y:
+          minLength: 1
+          maxLength: 80
+        optionB:
           type: string
-          pattern: ^[A-Za-z0-9_-]{43}$
+          minLength: 1
+          maxLength: 80
+    AgentBallotReceipt:
+      type: object
+      additionalProperties: false
+      required:
+      - schemaVersion
+      - receiptId
+      - status
+      - challengeId
+      - packId
+      - packVersion
+      - ballotHash
+      - provenance
+      - cohortLabel
+      - selfAnswerCount
+      - predictionAnswerCount
+      - receivedAt
+      properties:
+        schemaVersion:
+          type: string
+          const: '1.0'
+        receiptId:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{8,64}$
+        status:
+          type: string
+          const: accepted
+        challengeId:
+          type: string
+        packId:
+          type: string
+        packVersion:
+          type: integer
+        ballotHash:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        provenance:
+          type: string
+          enum:
+          - lab_recorded
+          - direct_signed
+          - direct_declared
+          - human_relayed
+        cohortLabel:
+          type: string
+        selfAnswerCount:
+          type: integer
+          minimum: 0
+          maximum: 64
+        predictionAnswerCount:
+          type: integer
+          minimum: 0
+          maximum: 64
+        receivedAt:
+          type: string
+          format: date-time
 externalDocs:
   description: ViewsMeet participation instructions
   url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md

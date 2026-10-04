@@ -26,6 +26,67 @@ paths:
       - Connections
 components:
   schemas:
+    ConnectionTopologyCell:
+      type: object
+      additionalProperties: false
+      required:
+      - fromActorClass
+      - fromActorEvidence
+      - toActorClass
+      - toActorEvidence
+      - relationshipType
+      - directEdgeCount
+      - propagationEdgeCount
+      - independentLineageCount
+      properties:
+        fromActorClass:
+          type: string
+          enum:
+          - person
+          - software
+          - unspecified
+        fromActorEvidence:
+          type: string
+          enum:
+          - self_declared
+          - mcp_transport
+          - unspecified
+        toActorClass:
+          type: string
+          enum:
+          - person
+          - software
+          - unspecified
+        toActorEvidence:
+          type: string
+          enum:
+          - self_declared
+          - mcp_transport
+          - unspecified
+        relationshipType:
+          type: string
+          enum:
+          - friend
+          - best_friend
+          - partner
+          - sibling
+          - family
+          - group_member
+          - teammate
+          - long_distance
+          - other
+        directEdgeCount:
+          type: integer
+          minimum: 20
+          maximum: 1000000
+        propagationEdgeCount:
+          type: integer
+          minimum: 0
+          maximum: 1000000
+        independentLineageCount:
+          type: integer
+          minimum: 20
+          maximum: 1000000
     ConnectionTopology:
       type: object
       additionalProperties: false
@@ -111,67 +172,6 @@ components:
         methodologyUrl:
           type: string
           const: /methodology#connections
-    ConnectionTopologyCell:
-      type: object
-      additionalProperties: false
-      required:
-      - fromActorClass
-      - fromActorEvidence
-      - toActorClass
-      - toActorEvidence
-      - relationshipType
-      - directEdgeCount
-      - propagationEdgeCount
-      - independentLineageCount
-      properties:
-        fromActorClass:
-          type: string
-          enum:
-          - person
-          - software
-          - unspecified
-        fromActorEvidence:
-          type: string
-          enum:
-          - self_declared
-          - mcp_transport
-          - unspecified
-        toActorClass:
-          type: string
-          enum:
-          - person
-          - software
-          - unspecified
-        toActorEvidence:
-          type: string
-          enum:
-          - self_declared
-          - mcp_transport
-          - unspecified
-        relationshipType:
-          type: string
-          enum:
-          - friend
-          - best_friend
-          - partner
-          - sibling
-          - family
-          - group_member
-          - teammate
-          - long_distance
-          - other
-        directEdgeCount:
-          type: integer
-          minimum: 20
-          maximum: 1000000
-        propagationEdgeCount:
-          type: integer
-          minimum: 0
-          maximum: 1000000
-        independentLineageCount:
-          type: integer
-          minimum: 20
-          maximum: 1000000
 externalDocs:
   description: ViewsMeet participation instructions
   url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md

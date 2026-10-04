@@ -67,6 +67,105 @@ paths:
       - Agent
 components:
   schemas:
+    AgentQuestion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - prompt
+      - optionA
+      - optionB
+      properties:
+        id:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{1,64}$
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 240
+        optionA:
+          type: string
+          minLength: 1
+          maxLength: 80
+        optionB:
+          type: string
+          minLength: 1
+          maxLength: 80
+    AgentBallot:
+      type: object
+      additionalProperties: false
+      description: Enum-only ballot. Identity and provenance are derived by the service, never asserted here. Free text and URLs are not accepted.
+      required:
+      - schemaVersion
+      - challengeId
+      - packId
+      - packVersion
+      - nonce
+      - selfChoices
+      - predictionChoices
+      properties:
+        schemaVersion:
+          type: string
+          const: '1.0'
+        challengeId:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{8,64}$
+        packId:
+          type: string
+          pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+          maxLength: 64
+        packVersion:
+          type: integer
+          minimum: 1
+          maximum: 1000000
+        nonce:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{16,128}$
+        selfChoices:
+          type: array
+          minItems: 0
+          maxItems: 64
+          items:
+            type: string
+            enum:
+            - a
+            - b
+        predictionChoices:
+          type: array
+          minItems: 0
+          maxItems: 64
+          items:
+            type: string
+            enum:
+            - a
+            - b
+    ProtocolError:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        issues:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - path
+            - code
+            - message
+            properties:
+              path:
+                type: string
+              code:
+                type: string
+              message:
+                type: string
     AgentChallenge:
       type: object
       additionalProperties: false
@@ -167,78 +266,6 @@ components:
           - type: string
             maxLength: 400
           - type: 'null'
-    AgentQuestion:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - prompt
-      - optionA
-      - optionB
-      properties:
-        id:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{1,64}$
-        prompt:
-          type: string
-          minLength: 1
-          maxLength: 240
-        optionA:
-          type: string
-          minLength: 1
-          maxLength: 80
-        optionB:
-          type: string
-          minLength: 1
-          maxLength: 80
-    AgentBallot:
-      type: object
-      additionalProperties: false
-      description: Enum-only ballot. Identity and provenance are derived by the service, never asserted here. Free text and URLs are not accepted.
-      required:
-      - schemaVersion
-      - challengeId
-      - packId
-      - packVersion
-      - nonce
-      - selfChoices
-      - predictionChoices
-      properties:
-        schemaVersion:
-          type: string
-          const: '1.0'
-        challengeId:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{8,64}$
-        packId:
-          type: string
-          pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
-          maxLength: 64
-        packVersion:
-          type: integer
-          minimum: 1
-          maximum: 1000000
-        nonce:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{16,128}$
-        selfChoices:
-          type: array
-          minItems: 0
-          maxItems: 64
-          items:
-            type: string
-            enum:
-            - a
-            - b
-        predictionChoices:
-          type: array
-          minItems: 0
-          maxItems: 64
-          items:
-            type: string
-            enum:
-            - a
-            - b
     AgentBallotReceipt:
       type: object
       additionalProperties: false
@@ -294,33 +321,6 @@ components:
         receivedAt:
           type: string
           format: date-time
-    ProtocolError:
-      type: object
-      additionalProperties: false
-      required:
-      - error
-      - message
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-        issues:
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            required:
-            - path
-            - code
-            - message
-            properties:
-              path:
-                type: string
-              code:
-                type: string
-              message:
-                type: string
 externalDocs:
   description: ViewsMeet participation instructions
   url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md
