@@ -54,3 +54,19 @@ proposed:
   billing_period: one-time
   status: not-for-sale
   note: '"The proposed $5 one-time founding option is not currently for sale." Interest button records an aggregate signal only; no payment, pledge or benefit (Terms, Support signal).'
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - metered
+  units:
+  - request
+  plans:
+  - name: Free
+    access: free
+    model: metered
+    model_how: derived
+    units:
+    - request
+    periods:
+    - minute
