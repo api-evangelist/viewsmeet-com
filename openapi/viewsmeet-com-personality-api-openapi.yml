@@ -273,12 +273,6 @@ paths:
       - Personality
 components:
   schemas:
-    MiniIpipResponseVector:
-      type: array
-      minItems: 20
-      maxItems: 20
-      items:
-        $ref: '#/components/schemas/MiniIpipResponseEntry'
     MiniIpipResponseEntry:
       type: object
       additionalProperties: false
@@ -297,6 +291,12 @@ components:
           - 3
           - 4
           - 5
+    MiniIpipResponseVector:
+      type: array
+      minItems: 20
+      maxItems: 20
+      items:
+        $ref: '#/components/schemas/MiniIpipResponseEntry'
 externalDocs:
   description: ViewsMeet participation instructions
   url: https://viewsmeet.com/.well-known/agent-skills/viewsmeet-participation/SKILL.md

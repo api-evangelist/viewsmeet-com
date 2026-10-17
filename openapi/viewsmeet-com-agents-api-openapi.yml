@@ -132,6 +132,30 @@ paths:
       - Agents
 components:
   schemas:
+    AgentQuestion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - prompt
+      - optionA
+      - optionB
+      properties:
+        id:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{1,64}$
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 240
+        optionA:
+          type: string
+          minLength: 1
+          maxLength: 80
+        optionB:
+          type: string
+          minLength: 1
+          maxLength: 80
     P256PublicJwk:
       type: object
       additionalProperties: false
@@ -253,30 +277,6 @@ components:
           - type: string
             maxLength: 400
           - type: 'null'
-    AgentQuestion:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - prompt
-      - optionA
-      - optionB
-      properties:
-        id:
-          type: string
-          pattern: ^[A-Za-z0-9_-]{1,64}$
-        prompt:
-          type: string
-          minLength: 1
-          maxLength: 240
-        optionA:
-          type: string
-          minLength: 1
-          maxLength: 80
-        optionB:
-          type: string
-          minLength: 1
-          maxLength: 80
     AgentBallotReceipt:
       type: object
       additionalProperties: false
